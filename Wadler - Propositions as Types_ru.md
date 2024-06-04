@@ -1,10 +1,10 @@
 # Утверждения как типы
 
-Philip Wadler
+Филип Вадлер
 
-University of Edinburgh [wadler@inf.ed.ac.uk](mailto:wadler@inf.ed.ac.uk)
+Эдинбургский университет [wadler@inf.ed.ac.uk](mailto:wadler@inf.ed.ac.uk)
 
-## 1.   Introduction
+## 1. Введение
 
 Мощные идеи возникают в результате объединения двух областей исследования, которые раньше считались отдельными. Например Декартовы координаты, которые связывают геометрию с алгеброй, квантовая теория Планка, которая связывает частицы с волнами, и теорию информации Шеннона, которая связывает термодинамику с теорией передачи информации. Принцип «Утверждения как типы» позволяет связать логику с теорией вычислений. На первый взгляд он кажется простым совпадением – почти каламбуром – но он оказывается удивительно надежным, вдохновляющим на разработку автоматизированных пруверов и языков программирования и продолжает оказывать влияние на передовые компьютерные технологии.
 
@@ -16,7 +16,7 @@ University of Edinburgh [wadler@inf.ed.ac.uk](mailto:wadler@inf.ed.ac.uk)
 
 Оно идет глубже: для каждого доказательства данного утверждения существует программа соответствующего типа — и наоборот. Таким образом, мы также имеем
 
-*proofs as programs.*
+*доказательства как программы.*
 
 И дажет еще глубже: каждому способу упростить доказательство соответствует соответствующий способ выполнения программы — и наоборот. Таким образом, мы далее имеем
 
@@ -32,471 +32,471 @@ PDF документ дополнительно содержит ссылки и
 
 Эта статья представляет собой краткое введение в тему «Утверждения как типы». Для тех, кто хочет узнать больше, доступны учебники [23, 59, 56].
 
-## 2. Church, and the theory of computation
+## 2. Чёрч и теория вычислений
 
 Истоки логики лежат от Аристотеля и стоиков классической Греции, Оккама и схоластиков в средние века к Лейбница с его   *математике мысли* (calculus ratiocinator) на заре просвещения. Наш интерес к этому предмету связан с формальной логикой, которая возникла благодаря вкладу Буля, Де Моргана, Фреге, Пирса, Пеано и других в XIX веке.
 
-As the 20th century dawned, Whitehead and Russell’s *Principia Mathematica* [66] demonstrated that formal logic could express a large part of mathematics. Inspired by this vision, Hilbert and his colleagues at Gottingen became the leading proponents of formal logic, aiming to put it on a firm foundation.
+На заре 20-го века *«Principia Mathematica* » Уайтхеда и Рассела [66] продемонстрировали, что формальная логика может выражать большую часть математики. Вдохновленные этим видением, Гильберт и его коллеги из Геттингена стали ведущими сторонниками формальной логики, стремясь поставить ее на прочный фундамент.
 
-One goal of Hilbert’s Program was to solve the *Entscheidungsproblem* (decision problem), that is, to develop an “effectively calculable” procedure to determine the truth or falsity of any statement. The problem presupposes completeness: that for any statement, either it or its negation possesses a proof. In his address to the 1930 Mathematical Congress in Konigsberg, Hilbert affirmed his belief in this principle, concluding “Wir mussen wis-sen, wir werden wissen” (“We must know, we will know”), words later engraved on his tombstone. Perhaps a tombstone is an appropriate place for those words, given that any basis for Hilbert’s optimism had been undermined the day before, when at the selfsame conference Godel [24] announced his proof that arithmetic is incomplete.
+Одной из целей программы Гильберта было решение *Entscheidungsproblem* (проблемы принятия решений), то есть разработка «эффективно вычислимой» процедуры для определения истинности или ложности любого утверждения. Проблема предполагает полноту: для любого утверждения либо оно, либо его отрицание обладает доказательством. В своем обращении к Математическому конгрессу 1930 года в Кенигсберге Гильберт подтвердил свою веру в этот принцип, заключив слова «Wir mussen wis-sen, wir werden wissen» («Мы должны знать, мы будем знать») — слова, позже выгравированные на его надгробии. Возможно, надгробие является подходящим местом для этих слов, учитывая, что всякое основание для оптимизма Гильберта было подорвано накануне, когда на той же конференции Гёдель [24] объявил о своем доказательстве неполноты арифметики.
 
-While the goal was to satisfy Hilbert’s program, no precise definition of “effectively calculable” was required. It would be clear whether a given procedure was effective or not, like Justice Stewart’s characterisation of obscenity, “I know it when I see it”. But to show the *Entscheidungsproblem* undecidable required a formal definition of “effectively calculable”.
+Хотя целью было удовлетворить программу Гильберта, точного определения понятия «эффективно вычислимого» не требовалось. Было бы ясно, эффективна ли данная процедура или нет, как, например, в характеристике непристойности судьей Стюартом: «Я узнаю это, когда увижу это». Но чтобы показать неразрешимость *проблемы Entscheidungs* , требовалось формальное определение понятия «эффективно вычислимое».
 
-One can find allusions to the concept of algorithm in the work of Euclid and, eponymously, al-Khwarizmi, but the concept was only formalised in the 20th century, and then simultaneously received three independent definitions by logicians. Like buses: you wait two thousand years for a definition of “effectively calculable”, and then three come along at once. The three were *lambda calculus*, published 1936 by Alonzo Church [9], *recursive functions*, proposed by Godel at lectures in Princeton in 1934 and published 1936 by Stephen Kleene [35], and *Turing machines*, published 1937 by Alan Turing [60].
+Отсылки к понятию алгоритма можно встретить в работах Евклида и, одноимённо, аль-Хорезми, однако формализовать это понятие удалось лишь в XX веке, а затем одновременно получило три независимых определения логиков. Как автобусы: вы ждете две тысячи лет определения понятия «эффективно вычислимое», а затем приходит сразу три. Это были *лямбда-исчисление* , опубликованное в 1936 году Алонзо Чёрчем [9], *рекурсивные функции* , предложенные Гёделем на лекциях в Принстоне в 1934 году и опубликованные в 1936 году Стивеном Клин [35], и *машины Тьюринга* , опубликованные в 1937 году Аланом Тьюрингом [60].
 
-Lambda calculus was introduced by Church at Princeton, and further developed by his students Rosser and Kleene. At this time, Princeton rivalled Gottingen as a centre for the study of logic. The Institute for Advanced Study was co-located with the mathematics department in Fine Hall. In 1933, Einstein and von Neumann joined the Institute, and Godel arrived for a visit.
+Лямбда-исчисление было введено Чёрчем в Принстоне и далее развито его учениками Россером и Клини. В это время Принстон соперничал с Геттингеном как центр изучения логики. Институт перспективных исследований располагался рядом с математическим факультетом в Файн-холле. В 1933 году в институт присоединились Эйнштейн и фон Нейман, и с визитом приехал Гёдель.
 
-Logicians have long been concerned with the idea of function. Lambda calculus provides a concise notation for functions, including “first-class” functions that may appear as arguments or results of other functions. It is remarkably compact, containing only three constructs: variables, function abstraction, and function application. Church [7] at first introduced lambda calculus as a way to define notations for logical formulas (almost like a macro language) in a new presentation of logic. All forms of bound variable could be subsumed to lambda binding. (For instance, instead of `∃x. A[x]`, Church wrote `Σ(λx. A[x]`].) However, it was later discovered by Kleene and Rosser [38] that Church’s system was inconsistent. By this time, Church and his students had realised that the system was of independent interest. Church had foreseen this possibility in his first paper on the subject, where he wrote “There may, indeed, be other applications of the system than its use as a logic.”
+Логики уже давно интересуются идеей функции. Лямбда-исчисление обеспечивает краткое обозначение функций, включая «первоклассные» функции, которые могут выступать в качестве аргументов или результатов других функций. Он удивительно компактен и содержит всего три конструкции: переменные, абстракцию функции и применение функции. Чёрч [7] сначала представил лямбда-исчисление как способ определения обозначений логических формул (почти как макроязык) в новом представлении логики. Все формы связанной переменной можно отнести к лямбда-привязке. (Например, вместо `∃x. A[x]` Чёрч написал `Σ(λx. A[x]` ].) Однако позже Клини и Россер [38] обнаружили, что система Чёрча была противоречивой. К этому времени Чёрч и его студенты осознали, что система представляет независимый интерес. Чёрч предвидел такую ​​возможность в своей первой статье по этому вопросу, где он написал: «Действительно, могут быть и другие применения системы, помимо ее использования в качестве логики».
 
-Church discovered a way of encoding numbers as terms of lambda calculus. The number `n` is represented by a function that accepts a function `f` and a value `x`, and applies the function to the value `n` times. (For instance, three is `λf.λx.f(f(f(x)))`.) With this representation, it is easy to encode lambda terms that can add or multiply, but it was not clear how to encode the predecessor function, which finds the number one less than a given number. One day in the dentist’s office, Kleene suddenly saw how to define predecessor [34]. When Kleene brought the result to his supervisor, Church confided that he had nearly convinced himself that representing predecessor in lambda calculus was impossible. Once this hurdle was overcome, Church and his students soon became convinced that any “effectively calculable” function of numbers could be represented by a term in the lambda calculus.
+Чёрч открыл способ кодирования чисел с помощью лямбда-исчисления. Число `n` представлено функцией, которая принимает функцию `f` и значение `x` и применяет эту функцию к значению `n` раз. (Например, три — это `λf.λx.f(f(f(x)))` .) С помощью этого представления легко кодировать лямбда-термины, которые могут складывать или умножать, но было неясно, как кодировать функцию-предшественницу , который находит число на единицу меньше заданного числа. Однажды в кабинете дантиста Клини вдруг увидела, как определить предшественника [34]. Когда Клини принес результат своему руководителю, Чёрч признался, что почти убедил себя в невозможности представления предшественника в лямбда-исчислении. Как только это препятствие было преодолено, Чёрч и его студенты вскоре убедились, что любая «эффективно вычислимая» функция чисел может быть представлена ​​членом лямбда-исчисления.
 
-Church proposed λ-definability as the definition of “effectively calculable”, what we now know as Church’s Thesis, and demonstrated that there was a problem whose solution was not λ-definable, that of determining whether a given λ-term has a normal form, what we now know as the Halting Problem [9]. A year later, he demonstrated there was no λ-definable solution to the Entscheidungsproblem [8].
+Чёрч предложил λ-определимость как определение «эффективно вычислимого», то, что мы теперь знаем как тезис Чёрча, и продемонстрировал, что существует проблема, решение которой не является λ-определимым, а именно определение того, имеет ли данный λ-терм нормальную форму. , то, что мы теперь знаем как проблема остановки [9]. Год спустя он продемонстрировал, что не существует λ-определяемого решения проблемы Entscheidungs ​​[8].
 
-In 1933, Godel arrived for a visit at Princeton. He was unconvinced by Church’s contention that every effectively calculable function was λ-definable. Church responded by offering that if Godel would propose a different definition, then Church would “undertake to prove it was included in λ-definability”. In a series of lectures at Princeton in 1934, based on a suggestion of Herbrand, Godel proposed what came to be known as “general recursive functions” as his candidate for effective calculability. Kleene took notes and published the definition [35]. Church and his students soon determined that the two definitions are equivalent: every general recursive function is λ-definable, and vice-versa. The proof was outlined by Church [8] and published in detail by Kleene [36]. Rather than mollifying Godel, this result caused him to doubt that his own definition was correct! Things stood at an impasse.
+В 1933 году Гёдель приехал с визитом в Принстон. Его не убедило утверждение Чёрча о том, что каждая эффективно вычислимая функция является λ-определимой. Чёрч ответил, предложив, что если Гёдель предложит другое определение, то Чёрч «обязуется доказать, что оно включено в λ-определимость». В серии лекций в Принстоне в 1934 году, основываясь на предложении Эрбрана, Гёдель предложил в качестве кандидата на эффективную вычислимость то, что стало известно как «общерекурсивные функции». Клини сделала заметки и опубликовала определение [35]. Чёрч и его ученики вскоре определили, что эти два определения эквивалентны: каждая общерекурсивная функция λ-определима, и наоборот. Доказательство было изложено Чёрчем [8] и подробно опубликовано Клини [36]. Этот результат не успокоил Гёделя, а заставил его усомниться в правильности его собственного определения! Дело зашло в тупик.
 
-Meanwhile, at Cambridge, Alan Turing, a student of Max Newman, independently formulated his own notion of “effectively calculable” in the form of what we now call a Turing Machine, and used this to show the *Entscheidungsproblem* undecidable. Before the paper was published, Newman was dismayed to discover that Turing had been scooped by Church. However, Turing’s approach was sufficiently different from Church’s to merit independent publication. Turing hastily added an appendix sketching the equivalence of λ-definability to his machines, and his paper [60] appeared in print a year after Church’s, when Turing was 23. Newman arranged for Turing to travel to Princeton, where he completed a doctorate under Church’s supervision.
+Тем временем в Кембридже Алан Тьюринг, ученик Макса Ньюмана, независимо сформулировал свое собственное понятие «эффективно вычислимого» в форме того, что мы теперь называем машиной Тьюринга, и использовал его, чтобы показать неразрешимость *проблемы Entscheidungs* . Еще до публикации статьи Ньюман был встревожен, обнаружив, что Тьюринга подхватил Черч. Однако подход Тьюринга достаточно отличался от подхода Чёрча, чтобы заслужить независимую публикацию. Тьюринг поспешно добавил к своим машинам приложение, описывающее эквивалентность λ-определимости, и его статья [60] появилась в печати через год после статьи Чёрча, когда Тьюрингу было 23 года. Ньюман организовал поездку Тьюринга в Принстон, где он защитил докторскую диссертацию под руководством Тьюринга. Надзор церкви.
 
-Turing’s most significant difference from Church was not in logic or mathematics but in philosophy. Whereas Church merely presented the definition of λ-definability and baldly claimed that it corresponded to effective calculability, Turing undertook an analysis of the capabilities of a “computer” — at this time, the term referred to a human performing a computation assisted by paper and pencil. Turing argued that the number of symbols must be finite (for if infinite, some symbols would be arbitrarily close to each other and undistinguishable), that the number of states of mind must be finite (for the same reason), and that the number of symbols under consideration at one moment must be bounded (“We cannot tell at a glance whether 9999999999999999 and 999999999999999 are the same”). Later, Gandy [18] would point out that Turing’s argument amounts to a theorem asserting that any computation a human with paper and pencil can perform can also be performed by a Turing Machine. It was Turing’s argument that finally convinced Godel; since λ-definability, recursive functions, and Turing machines had been proved equivalent, he now accepted that all three defined “effectively calculable”.
+Самое существенное отличие Тьюринга от Чёрча заключалось не в логике или математике, а в философии. В то время как Чёрч просто представил определение λ-определимости и открыто заявил, что оно соответствует эффективной вычислимости, Тьюринг предпринял анализ возможностей «компьютера» — в то время этот термин относился к человеку, выполняющему вычисления с помощью бумаги и бумаги. карандаш. Тьюринг утверждал, что число символов должно быть конечным (поскольку, если бы оно было бесконечным, некоторые символы были бы сколь угодно близки друг к другу и неразличимы), что число состояний сознания должно быть конечным (по той же причине) и что число рассматриваемые символы в данный момент должны быть ограничены («Мы не можем с первого взгляда сказать, являются ли 9999999999999999 и 999999999999999 одинаковыми»). Позже Ганди [18] укажет, что аргумент Тьюринга сводится к теореме, утверждающей, что любое вычисление, которое может выполнить человек с бумагой и карандашом, также может быть выполнено машиной Тьюринга. Именно аргумент Тьюринга окончательно убедил Гёделя; поскольку λ-определимость, рекурсивные функции и машины Тьюринга оказались эквивалентными, он теперь признал, что все три определяют «эффективно вычислимые».
 
-As mentioned, Church’s first use of lambda calculus was to encode formulas of logic, but this had to be abandoned because it led to inconsistency. The failure arose for a reason related to Russell’s paradox, namely that the system allowed a predicate to act on itself, and so Church adapted a solution similar to Russell’s, that of classifying terms according to types. Church’s simply-typed lambda calculus ruled out self-application, permitting lambda calculus to support a consistent logical formulation [10].
+Как уже упоминалось, первым использованием лямбда-исчисления Чёрчем было кодирование логических формул, но от этого пришлось отказаться, поскольку это приводило к несогласованности. Неудача возникла по причине, связанной с парадоксом Рассела, а именно: система позволяла предикату действовать сам на себя, и поэтому Чёрч адаптировал решение, аналогичное расселовскому, — классификацию терминов по типам. Просто типизированное лямбда-исчисление Чёрча исключало возможность самостоятельного применения, позволяя лямбда-исчислению поддерживать непротиворечивую логическую формулировку [10].
 
-Whereas self-application in Russell’s logic leads to paradox, self-application in Church’s untyped lambda calculus leads to non-terminating computations. Conversely, Church’s simply-typed lambda calculus guarantees every term has a normal form, that is, corresponds to a computation that halts.
+В то время как самоприменение в логике Рассела приводит к парадоксу, самоприменение в нетипизированном лямбда-исчислении Чёрча приводит к непрерывным вычислениям. И наоборот, простое лямбда-исчисление Чёрча гарантирует, что каждый терм имеет нормальную форму, то есть соответствует остановленному вычислению.
 
-The two applications of lambda calculus, to represent computation and to represent logic, are in a sense mutually exclusive. If a notion of computation is powerful enough to represent any effectively calculable procedure, then that notion is not powerful enough to solve its own Halting Problem: there is no effectively calculable procedure to determine whether a given effectively calculable procedure terminates. However, the consistency of Church’s logic based on simply-typed lambda calculus depends on every term having a normal form.
+Два применения лямбда-исчисления — для представления вычислений и для представления логики — в некотором смысле являются взаимоисключающими. Если понятие вычисления достаточно мощное, чтобы представить любую эффективно вычислимую процедуру, то это понятие недостаточно мощное, чтобы решить собственную проблему остановки: не существует эффективно вычислимой процедуры, позволяющей определить, завершается ли данная эффективно вычислимая процедура. Однако непротиворечивость логики Чёрча, основанной на просто типизированном лямбда-исчислении, зависит от того, имеет ли каждый терм нормальную форму.
 
-Untyped lambda calculus or typed lambda calculus with a construct for general recursion (sometimes called a fixpoint operator) permits the definition of any effectively computable function, but have a Halting Problem that is unsolvable. Typed lambda calculi without a construct for general recursion have a Halting Problem that is trivial — every program halts! — but cannot define some effectively computable functions. Both kinds of calculus have their uses, depending on the intended application.
+Нетипизированное лямбда-исчисление или типизированное лямбда-исчисление с конструкцией для общей рекурсии (иногда называемой оператором фиксированной точки) позволяет определить любую эффективно вычислимую функцию, но имеет неразрешимую проблему остановки. Типизированные лямбда-исчисления без конструкции для общей рекурсии имеют тривиальную проблему остановки — каждая программа останавливается! — но не может определить некоторые эффективно вычислимые функции. Оба вида исчисления имеют свое применение в зависимости от предполагаемого применения.
 
-As well as fundamental contributions to programming languages, Church also made early contributions to hardware verification and model checking, as described by Vardi [62].
+Помимо фундаментального вклада в языки программирования, Черч также внес ранний вклад в верификацию аппаратного обеспечения и проверку моделей, как описано Варди [62].
 
-## 3.   Gentzen, and the theory of proof
+## 3. Генцен и теория доказательства.
 
-A second goal of Hilbert’s program was to establish the consistency of various logics. If a logic is inconsistent, then it can derive any formula, rendering it useless.
+Второй целью программы Гильберта было установление непротиворечивости различных логик. Если логика противоречива, то она может вывести любую формулу, сделав ее бесполезной.
 
-In 1935, at the age of 25, Gerhard Gentzen [20] introduced not one but two new formulations of logic, natural deduction and sequent calculus, which became established as the two major systems for formulating a logic, and remain so to this day. He showed how to normalise proofs to ensure they were not “roundabout”, yielding a new proof of the consistency of Hilbert’s system. And, to top it off, to match the use of the symbol `∃` for the existential quantification introduced by Peano, Gentzen introduced the symbol V to denote universal quantification. He wrote implication as `A ⊃ B` (if `A` holds then `B` holds), conjunction as `A & B` (both `A` and `B` hold), and disjunction as `A ∨ B` (at least one of `A` or `B` holds).
+В 1935 году, в возрасте 25 лет, Герхард Генцен [20] представил не одну, а две новые формулировки логики: естественную дедукцию и секвенциальное исчисление, которые утвердились как две основные системы формулирования логики и остаются таковыми по сей день. Он показал, как нормализовать доказательства, чтобы они не были «окольными», что привело к новому доказательству непротиворечивости системы Гильберта. И, в довершение всего, чтобы соответствовать использованию символа `∃` для экзистенциальной квантификации, введенной Пеано, Генцен ввел символ V для обозначения универсальной квантификации. Он написал импликацию как `A ⊃ B` (если выполнено `A` , то выполнено `B` ), конъюнкцию как `A & B` (имеет место и `A` , и `B` ), а дизъюнкцию как `A ∨ B` (имеет место хотя бы одно из `A` или `B` ).
 
-Gentzen’s insight was that proof rules should come in pairs, a feature not present in earlier systems such as Hilbert’s. In natural deduction, these are introduction and elimination pairs. An introduction rule specifies under what circumstances one may assert a formula with a logical connective (for instance, to prove `A ⊃ B`, one may assume `A` and then must prove `B`), while the corresponding elimination rule shows how to use that logical connective (for instance, from a proof of `A ⊃ B` and a proof of `A` one may deduce `B`, a property dubbed *modus ponens* in the middle ages). As Gentzen notes, “The introductions represent, as it were, the ‘definitions’ of the symbols concerned, and the eliminations are no more, in the final analysis, than the consequences of these definitions.”
+Идея Генцена заключалась в том, что правила доказательства должны быть парными, чего не было в более ранних системах, таких как система Гильберта. В естественной дедукции это пары введения и исключения. Правило введения определяет, при каких обстоятельствах можно утверждать формулу с логической связкой (например, чтобы доказать `A ⊃ B` , можно предположить `A` , а затем необходимо доказать `B` ), а соответствующее правило исключения показывает, как использовать эту логическую связку ( например, из доказательства `A ⊃ B` и доказательства `A` можно вывести `B` , свойство, получившее в средние века *modus ponens* ). Как отмечает Генцен: «Введения представляют собой как бы «определения» соответствующих символов, а исключения являются, в конечном счете, не более чем последствиями этих определений».
 
-A consequence of this insight was that any proof could be normalised to one that is not “roundabout”, where “no concepts enter into the proof other than those contained in the final result”. For example, in a normalised proof of the formula `A & B`, the only formulas that may appear are itself and its subformulas, `A` and `B`, and the subformulas of `A` and `B` themselves. No other formula, such as `(B & A) ⊃ (A & B)` or `A ∨ B`, may appear; this is called the Subformula Property. An immediate consequence was consistency. It is a contradiction to prove false, written `⋏`. The only way to derive a contradiction is to prove, say, both `A ⊃ ⋏` and `A` for some formula `A`. But given such a proof, one could normalise it to one containing only subformulas of its conclusion, `⋏`. But `⋏` has no subformulas! It is like the old saw, “What part of no don’t you understand?” Logicians became interested in normalisation of proofs because of its role in establishing consistency.
+Следствием этого понимания стало то, что любое доказательство можно было нормализовать до такого, которое не является «окольным», где «в доказательство не входят никакие концепции, кроме тех, которые содержатся в конечном результате». Например, в нормализованном доказательстве формулы `A & B` единственные формулы, которые могут появиться, — это сама формула и ее подформулы `A` и `B` , а также сами подформулы `A` и `B` Никакая другая формула, такая как `(B & A) ⊃ (A & B)` или `A ∨ B` , не может появиться; это называется свойством подформулы. Немедленным следствием стала последовательность. Доказывать ложность — противоречие, написанное `⋏` . Единственный способ прийти к противоречию — это доказать, скажем, что `A ⊃ ⋏` и `A` для некоторой формулы `A` . Но учитывая такое доказательство, его можно было бы нормализовать до доказательства, содержащего только подформулы его заключения, `⋏` . Но у `⋏` нет подформул! Это похоже на старую поговорку: «Какую часть слова «нет» ты не понимаешь?» Логики заинтересовались нормализацией доказательств из-за ее роли в установлении непротиворечивости.
 
-Gentzen preferred the system of Natural Deduction because it was, in his view, more natural. He introduced Sequent Calculus mainly as a technical device for proving the Subformula Property, though it has independent interest.
+Генцен предпочитал систему естественной дедукции, поскольку она, по его мнению, была более естественной. Он представил Sequent Calculus главным образом как технический инструмент для доказательства свойства подформулы, хотя он имеет и независимый интерес.
 
-Sequent Calculus has two key properties. First, every proof in Natural Deduction can be converted to a proof in Sequent Calculus, and conversely, so the two systems are equivalent. Second, unlike Natural Deduction, every rule save one has the property that its hypotheses only involve subformulas of those that appear in its conclusion. The one exception, the Cut rule, can always be removed by a process called Cut Elimination. Hence every proof had an equivalent normal form satisfying the Subformula Property. Gentzen’s main interest in Sequent Calculus was to prove the Subformula Property, although Sequent Calculus has features of independent interest, such as providing a more symmetric presentation of classical logic, and today researchers often use formulations closer to Sequent Calculus than to Natural Deduction.
+Sequent Calculus имеет два ключевых свойства. Во-первых, каждое доказательство естественной дедукции можно преобразовать в доказательство секвентного исчисления и наоборот, поэтому обе системы эквивалентны. Во-вторых, в отличие от естественной дедукции, каждое правило, за исключением одного, обладает тем свойством, что его гипотезы включают только подформулы тех, которые появляются в его заключении. Единственное исключение — правило Cut — всегда можно удалить с помощью процесса, называемого «Устранение выреза». Следовательно, каждое доказательство имело эквивалентную нормальную форму, удовлетворяющую свойству подформулы. Основной интерес Генцена к секвентному исчислению заключался в доказательстве свойства подформулы, хотя секвентивное исчисление имеет особенности, представляющие независимый интерес, такие как обеспечение более симметричного представления классической логики, и сегодня исследователи часто используют формулировки, более близкие к секвентному исчислению, чем к естественной дедукции.
 
-It is an irony that Gentzen was required to introduce Sequent Calculus in order to prove the Subformula Property for Natural Deduction. He needed a roundabout proof to show the absence of roundabout proofs! Later, in 1965, Prawitz showed how to prove the Subformula Property directly, by introducing a way to simplify Natural Deduction proofs; and this set the ground for Howard’s work described in the next section.
+По иронии судьбы, Генцену пришлось ввести секвенционное исчисление, чтобы доказать свойство подформулы естественного вывода. Ему нужно было обходное доказательство, чтобы показать отсутствие обходных доказательств! Позже, в 1965 году, Правиц показал, как напрямую доказать свойство подформулы, предложив способ упростить доказательства методом естественной дедукции; и это заложило основу для работы Говарда, описанной в следующем разделе.
 
-## 4.   Propositions as Types
+## 4. Предложения как типы
 
-In 1934, Curry observed a curious fact, relating a theory of functions to a theory of implication [13]. Every type of a function `(A → B)` could be read as a proposition `(A ⊃ B)`, and under this reading the type of any given function would always correspond to a provable proposition. Conversely, for every provable proposition there was a function with the corresponding type. Subsequently, Curry and Feys [14] extended the correspondence from not merely types and propositions to also include term and proofs, and to hint at the relation between evaluation of terms and simplification of proofs.
+В 1934 году Карри заметил любопытный факт, связывающий теорию функций с теорией импликации [13]. Любой тип функции `(A → B)` можно прочитать как предложение `(A ⊃ B)` , и при таком прочтении тип любой данной функции всегда будет соответствовать доказуемому предложению. И наоборот, для каждого доказуемого предложения существовала функция соответствующего типа. Впоследствии Карри и Фейс [14] расширили соответствие не только от типов и предложений, но и включили термины и доказательства, а также намекнули на связь между оценкой терминов и упрощением доказательств.
 
-In 1969, Howard circulated a xeroxed manuscript [32]. It was not published until 1980, where it appeared in a Festschrift dedicated to Curry. Motivated by Curry’s observation, Howard pointed out that there is a similar correspondence between natural deduction, on the one hand, and simply-typed lambda calculus, on the other, and he made explicit the third and deepest level of the correspondence as described in the introduction, that simplification of proofs corresponds to evaluation of programs. Howard showed the correspondence extends to the other logical connectives, conjunction and disjunction, by extending his lambda calculus with constructs that represent pairs and disjoint sums. Just as proof rules come in introduction and elimination pairs, so do typing rules: introduction rules correspond to ways to define or construct a value of the given type, and elimination rules correspond to ways to use or deconstruct values of the given type.
+В 1969 году Ховард распространил ксерокопированную рукопись [32]. Он не публиковался до 1980 года, когда появился в Festschrift, посвященном Карри. Вдохновленный наблюдением Карри, Говард указал, что существует сходное соответствие между естественной дедукцией, с одной стороны, и просто типизированным лямбда-исчислением, с другой, и четко обозначил третий, самый глубокий уровень соответствия, как описано в введение, что упрощение доказательств соответствует оцениванию программ. Ховард показал, что соответствие распространяется на другие логические связки, конъюнкция и дизъюнкция, расширив свое лямбда-исчисление конструкциями, представляющими пары и непересекающиеся суммы. Точно так же, как правила доказательства входят в пары введения и исключения, так же и правила типизации: правила введения соответствуют способам определения или построения значения данного типа, а правила исключения соответствуют способам использования или деконструкции значений данного типа.
 
-We can describe Howard’s observation as follows:
+Мы можем описать наблюдение Говарда следующим образом:
 
-- Conjunction `A & B` corresponds to Cartesian product `A x B`, that is, a record with two fields, also known as a pair. A proof of the proposition `A & B` consists of a proof of `A` and a proof of `B` . Similarly, a value of type `A x B` consists of a value of type `A` and a value of type `B`.
-- Disjunction `A ∨ B` corresponds to a disjoint sum `A + B`, that is, a variant with two alternatives. A proof of the proposition `A ∨ B` consists of either a proof of `A` or a proof of `B`, including an indication of which of the two has been proved. Similarly, a value of type `A + B` consists of either a value of type `A` or a value of type `B`, including an indication of whether this is a left or right summand.
-- Implication `A ⊃ B` corresponds to function space `A → B`. A proof of the proposition `A ⊃ B` consists of a procedure that given a proof of `A` yields a proof of `B` . Similarly, a value of type `A → B` consists of a function that when applied to a value of type `A` returns a value of type `B` .
+- Соединение `A & B` соответствует декартову произведению `A x B` , то есть записи с двумя полями, также известной как пара. Доказательство предложения `A & B` состоит из доказательства `A` и доказательства `B` Аналогично, значение типа `A x B` состоит из значения типа `A` и значения типа `B`
+- Дизъюнкция `A ∨ B` соответствует дизъюнктной сумме `A + B` , то есть варианту с двумя альтернативами. Доказательство предложения `A ∨ B` состоит либо из доказательства `A` , либо из доказательства `B` , включая указание того, какое из двух утверждений было доказано. Аналогично, значение типа `A + B` состоит либо из значения типа `A` , либо из значения типа `B` , включая указание на то, является ли это левым или правым слагаемым.
+- Импликация `A ⊃ B` соответствует функциональному пространству `A → B` Доказательство предложения `A ⊃ B` состоит из процедуры, которая при доказательстве `A` приводит к доказательству `B` . Аналогично, значение типа `A → B` состоит из функции, которая при применении к значению типа `A` возвращает значение типа `B`
 
-This reading of proofs goes back to the intuitionists, and is often called the BHK interpretation, named for Brouwer, Heyting, and Kolmogorov. Brouwer founded intuitionism [28], and Heyting [29] and Kolmogorov [39] formalised intuitionistic logic, and developed the interpretation above, in the 1920s and 1930s. Realisability, introduced by Kleene [37] in the 1940s, is based on a similar interpretation.
+Такое прочтение доказательств восходит к интуиционистам и часто называется интерпретацией БГК, названной в честь Брауэра, Гейтинга и Колмогорова. Брауэр основал интуиционизм [28], а Гейтинг [29] и Колмогоров [39] формализовали интуиционистскую логику и развили описанную выше интерпретацию в 1920-х и 1930-х годах. Реализуемость, введенная Клини [37] в 1940-х годах, основана на аналогичной интерпретации.
 
-Given the intuitionistic reading of proofs, it hardly seems surprising that intuitionistic natural deduction and lambda calculus should correspond so closely. But it wasn’t until Howard that the correspondence was laid out clearly, in a way that allowed working logicians and computer scientists to put it to use.
+Учитывая интуиционистское прочтение доказательств, вряд ли кажется удивительным, что интуиционистская естественная дедукция и лямбда-исчисление так тесно совпадают. Но только после Говарда переписка была изложена четко, так, чтобы ее могли использовать работающие логики и ученые-компьютерщики.
 
-Howard’s paper divides into two halves. The first half explains a correspondence between two well-understood concepts, the propositional connectives `&`, `∨`, `⊃` on the one hand and the computational types `×`, `+`, `→` on the other hand. The second half extends this analogy, and for well-understood concepts from logic proposes new concepts for types that correspond to them. In particular, Howard proposes that the predicate quantifiers `∀` and `∃` corresponds to new types that we now call *dependent types*.
+Лист Говарда делится на две половины. Первая половина объясняет соответствие между двумя хорошо понятными понятиями: пропозициональными связками `&` , `∨` , `⊃` с одной стороны и вычислительными типами `×` , `+` , `→` с другой стороны. Вторая половина расширяет эту аналогию и для хорошо понятных понятий из логики предлагает новые понятия для соответствующих им типов. В частности, Ховард предполагает, что кванторы предикатов `∀` и `∃` соответствуют новым типам, которые мы теперь называем *зависимыми типами* .
 
-With the introduction of dependent types, every proof in predicate logic can be represented by a term of a suitable typed lambda calculus. Mathematicians and computer scientists proposed numerous systems based on this concept, including de Bruijn’s Automath [17], Martin-Lof’s type theory [43], Bates and Constable’s PRL and nuPRL [3], and Coquand and Huet’s Calculus of Constructions [11], which developed into the Coq proof assistant.
+С введением зависимых типов каждое доказательство в логике предикатов может быть представлено термином подходящего типизированного лямбда-исчисления. Математики и ученые-компьютерщики предложили многочисленные системы, основанные на этой концепции, в том числе «Автомат де Брейна» [17], теорию типов Мартина-Лофа [43], PRL и nuPRL Бейтса и Констебля [3], а также «Исчисление конструкций» Коканда и Юэ [11]. который превратился в помощника по проверке доказательств Coq.
 
-Applications include CompCert, a certified compiler for the C programming language verified in Coq [41]; a computer-checked proof of the four-colour theorem also verified in Coq [25]; parts of the Ensemble distributed system verified in NuPRL [27, 40]; and twenty thousand lines of browser plug-ins verified in F? [57].  de Bruijn’s work was independent of Howard’s, but Howard directly inspired Martin Lof and all the other work listed above. Howard was (justly!) proud of his paper, citing it as one of the two great achievements of his career [55].
+Приложения включают CompCert, сертифицированный компилятор языка программирования C, проверенный в Coq [41]; проверенное на компьютере доказательство теоремы о четырех красках, также проверенное в Coq [25]; части распределенной системы Ensemble, проверенные в NuPRL [27, 40]; и двадцать тысяч строк плагинов для браузера, проверенных на F? [57]. Работа де Брейна не была связана с работой Ховарда, но Ховард напрямую вдохновил Мартина Лофа и все другие работы, перечисленные выше. Говард (справедливо!) гордился своей статьей, называя ее одним из двух величайших достижений своей карьеры [55].
 
-## 5.   Intuitionistic logic
+## 5. Интуиционистская логика
 
-In Gilbert and Sullivan’s *The Gondoliers*, Casilda is told that as an infant she was married to the heir of the King of Batavia, but that due to a mix-up no one knows which of two individuals, Marco or Giuseppe, is the heir. Alarmed, she wails “Then do you mean to say that I am married to one of two gondoliers, but it is impossible to say which?” To which the response is “Without any doubt of any kind whatever.”
+В *«Гондольерах* » Гилберта и Салливана Касильде рассказывается, что в младенчестве она была замужем за наследником короля Батавии, но из-за путаницы никто не знает, кто из двух человек, Марко или Джузеппе, является наследником. Встревоженная, она воет: «Тогда ты хочешь сказать, что я замужем за одним из двух гондольеров, но невозможно сказать, за каким?» На что ответ: «Без каких-либо сомнений».
 
-Logic comes in many varieties, and one distinction is between *classical* and *intuitionistic*. Intuitionists, concerned by cavalier assumptions made by some logicians about the nature of infinity, insist upon a constructionist notion of truth. In particular, they insist that a proof of `A ∨ B` must show which of `A` or `B` holds, and hence they would reject the claim that Casilda is married to Marco or Giuseppe until one of the two was identified as her husband. Perhaps Gilbert and Sullivan anticipated intuitionism, for their story’s outcome is that the heir turns out to be a third individual, Luiz, with whom Casilda is, conveniently, already in love.
+Логика существует во многих разновидностях, и есть одно различие между *классической* и *интуиционистской* . Интуиционисты, обеспокоенные бесцеремонными предположениями некоторых логиков о природе бесконечности, настаивают на конструктивистском понимании истины. В частности, они настаивают на том, что доказательство `A ∨ B` должно показать, какое из `A` или `B` имеет место, и, следовательно, они отвергнут утверждение о том, что Касильда замужем за Марко или Джузеппе, пока один из двоих не будет идентифицирован как ее муж. Возможно, Гилберт и Салливан предвосхитили интуиционизм, поскольку в результате их истории наследником оказывается третий человек, Луис, в которого Касильда, что удобно, уже влюблена.
 
-Intuitionists also reject the law of the excluded middle, which asserts `A ∨ ¬A` for every `A`, since the law gives no clue as to which of `A` or `¬A` holds. Heyting formalised a variant of Hilbert’s classical logic that captures the intuitionistic notion of provability. In particular, the law of the excluded middle is provable in Hilbert’s logic, but not in Heyting’s. Further, if the law of the excluded middle is added as an axiom to Heyting’s logic, then it becomes equivalent to Hilbert’s. Kolmogorov showed the two logics were closely related: he gave a double-negation translation, such that a formula is provable in classical logic if and only if its translation is provable in intuitionistic logic.
+Интуиционисты также отвергают закон исключенного третьего, который утверждает `A ∨ ¬A` для каждого `A` , поскольку закон не дает подсказки относительно того, какое из `A` или `¬A` имеет место. Хейтинг формализовал вариант классической логики Гильберта, отражающий интуиционистское понятие доказуемости. В частности, закон исключенного третьего доказуем в логике Гильберта, но не в логике Гейтинга. Далее, если к логике Гейтинга в качестве аксиомы добавить закон исключенного третьего, то он станет эквивалентным логике Гильберта. Колмогоров показал, что эти две логики тесно связаны: он дал перевод с двойным отрицанием, такой, что формула доказуема в классической логике тогда и только тогда, когда ее перевод доказуем в интуиционистской логике.
 
-Propositions as Types was first formulated for intuitionistic logic. It is a perfect fit, because in the intuitionist interpretation the formula `A ∨ B` is provable exactly when one exhibits either a proof of `A` or a proof of `B`, so the type corresponding to disjunction is a disjoint sum.
+Предложения как типы были впервые сформулированы для интуиционистской логики. Это идеальное соответствие, потому что в интуиционистской интерпретации формула `A ∨ B` доказуема точно тогда, когда кто-то демонстрирует либо доказательство `A` , либо доказательство `B` , поэтому тип, соответствующий дизъюнкции, представляет собой дизъюнктную сумму.
 
-## 6.   Other logics, other computation
+## 6. Другая логика, другие вычисления
 
-The principle of Propositions as Types would be remarkable even if it applied only to one variant of logic and one variant of computation. How much more remarkable, then, that it applies to a wide variety of logics and of computation.
+Принцип предложений как типов был бы замечательным, даже если бы он применялся только к одному варианту логики и одному варианту вычислений. Насколько же более примечательно то, что это применимо к широкому спектру логики и вычислений.
 
-Quantification over propositional variables in second-order logic corresponds to type abstraction in second-order lambda calculus. For this reason, the second-order lambda calculus was discovered twice, once by the logician Jean-Yves Girard [21] and once by the computer scientist John Reynolds [53]. And for the same reason, a similar system that supports principle type inference was also discovered twice, once by the logician Roger Hindley [30] and once by the computer scientist Robin Milner [45]. Building on the correspondence, John Mitchell and Gordon Plotkin [46] observed that existential quantification in second-order logic corresponds precisely to data abstraction, an idea that now underpins much research in the semantics of programming languages. The design of generic types in Java and C# draws directly upon Girard-Reynolds, while the type systems of functional languages including ML and Haskell are based upon Hindley-Milner. Philosophers might argue as to whether mathematical systems are ‘discovered’ or ‘devised’, but the same system arising in two different contexts argues that here the correct word is ‘discovered’.
+Квантование пропозициональных переменных в логике второго порядка соответствует абстракции типов в лямбда-исчислении второго порядка. По этой причине лямбда-исчисление второго порядка было открыто дважды: один раз логиком Жаном-Ивом Жираром [21] и один раз учёным-компьютерщиком Джоном Рейнольдсом [53]. По той же причине подобная система, поддерживающая вывод принципиального типа, была открыта дважды: один раз логиком Роджером Хиндли [30] и один раз ученым-компьютерщиком Робином Милнером [45]. Опираясь на это соответствие, Джон Митчелл и Гордон Плоткин [46] заметили, что экзистенциальная квантификация в логике второго порядка в точности соответствует абстракции данных — идее, которая сейчас лежит в основе многих исследований семантики языков программирования. Разработка универсальных типов в Java и C# напрямую опирается на Жирара-Рейнольдса, тогда как системы типов функциональных языков, включая ML и Haskell, основаны на Хиндли-Милнере. Философы могут спорить о том, являются ли математические системы «открытыми» или «разработанными», но одна и та же система, возникающая в двух разных контекстах, утверждает, что здесь правильное слово — «открыто».
 
-Two major variants of logic are intuitionistic and classical. Howard’s original paper observed a correspondence with intu-itionistic logic. Not until two decades later was the correspondence extended to also apply to classical logic, when Tim Griffin [26] observed that Peirce’s Law in classical logic provides a type for the call/cc operator of Scheme. Chet Murthy [49] went on to note that Kolmogorov and Godel’s double-negation translation, widely used to relate intuitionistic and classical logic, corresponds to the continuation-passing style transformation widely used both by semanticists and implementers of lambda calculus. Parigot [50], Curien and Herbelin [12], and Wadler [64] introduced various computational calculi motivated by correspondences to classical logic.
+Двумя основными вариантами логики являются интуиционистская и классическая. В оригинальной статье Ховарда наблюдалось соответствие с интуиционистской логикой. Лишь два десятилетия спустя это соответствие было расширено и теперь применимо и к классической логике, когда Тим Гриффин [26] заметил, что закон Пирса в классической логике предоставляет тип для оператора call/cc оператора Scheme. Чет Мурти [49] далее отметил, что перевод двойного отрицания Колмогорова и Геделя, широко используемый для связи интуиционистской и классической логики, соответствует преобразованию стиля передачи продолжения, широко используемому как семантиками, так и разработчиками лямбда-исчисления. Париго [50], Кюрьен и Гербелен [12] и Уодлер [64] представили различные вычислительные исчисления, мотивированные соответствиями классической логике.
 
-Modal logic permits propositions to be labelled as ‘necessarily true’ or ‘possibly true’. Clarence Lewis introduced modal logic in 1910, and his 1938 textbook [42] describes five variants, S1-S5. Some claim that each of these variants has an interpretation as a form of computation via Propositions as Types, and a down payment on this claim is given by an interpretation of S4 as staged computation due to Davies and Pfenning [16], and of S5 as spatially distributed computation due to Murphy et al [48].
+Модальная логика позволяет маркировать предложения как «необходимо истинные» или «возможно истинные». Кларенс Льюис представил модальную логику в 1910 году, а его учебник 1938 года [42] описывает пять вариантов: S1-S5. Некоторые утверждают, что каждый из этих вариантов имеет интерпретацию как форму вычислений через предложения как типы, а первоначальный взнос за это утверждение даёт интерпретация S4 как поэтапного вычисления, предложенная Дэвисом и Пфеннингом [16], а S5 как пространственно-распределенные вычисления, предложенные Мерфи и др. [48].
 
-Eugenio Moggi [47] introduced monads as a technique to explain the semantics of important features of programming languages such as state, exceptions, and input-output. Monads became widely adopted in the functional language Haskell, and later migrated into other languages, including Clojure, Scala, F#, and C#. Benton, Bierman, and de Paiva [4] observed that monads correspond to yet another modal logic, differing from all of S1-S5.
+Эудженио Моджи [47] представил монады как метод объяснения семантики важных особенностей языков программирования, таких как состояние, исключения и ввод-вывод. Монады получили широкое распространение в функциональном языке Haskell, а затем мигрировали в другие языки, включая Clojure, Scala, F# и C#. Бентон, Бирман и де Пайва [4] заметили, что монады соответствуют еще одной модальной логике, отличной от всей S1-S5.
 
-Temporal logic admits distinction between modalities such as ‘holds now’, ‘will hold eventually’, and ‘will hold in the next time step’. Temporal logic was first formalised by Arthur Prior in his 1957 text [52], and came to play a major role in the specification and verification of computing systems, beginning with the work of Amir Pnueli [51]. Interpretations of temporal logics via Propositions as Types include an application to partial evaluation due to Davies [15], and an application to functional reactive programming due to Jeffery [33].
+Темпоральная логика допускает различие между модальностями, такими как «сохраняется сейчас», «сохраняется в конечном итоге» и «сохраняется на следующем временном шаге». Темпоральная логика была впервые формализована Артуром Прайором в его тексте 1957 года [52] и стала играть важную роль в спецификации и проверке вычислительных систем, начиная с работы Амира Пнуэли [51]. Интерпретации темпоральной логики с помощью «Предложений как типов» включают приложение к частичному вычислению Дэвиса [15] и приложение к функциональному реактивному программированию Джеффри [33].
 
-In classical, intuitionistic, and modal logic, any hypothesis can be used an arbitrary number of times—zero, once, or many. Linear logic, introduced in 1987 by Girard [22], requires that each hypothesis is used exactly once. Linear logic is ‘resource conscious’ in that facts may be used up and superseded by other facts, suiting it for reasoning about a world where situations change. From its inception, linear logic was suspected to apply to problems of importance to computer scientists, and its first publication was not in *Annals of Mathematics* but in *Theoretical Computer Science*. Computational aspects of linear logic are discussed by Abramsky [1] and Wadler [63], among many others, and applications to quantum computing are surveyed by Gay [19]. Most recently, Session Types, a way of describing communication protocols introduced by Honda [31], have been related to intuitionistic linear logic by Caires and Pfenning [5], and to classical linear logic by Wadler [65].
+В классической, интуиционистской и модальной логике любая гипотеза может использоваться произвольное количество раз — ноль, один или несколько раз. Линейная логика, введенная в 1987 году Жираром [22], требует, чтобы каждая гипотеза использовалась ровно один раз. Линейная логика «сознательна к ресурсам» в том смысле, что факты могут быть израсходованы и заменены другими фактами, что подходит для рассуждений о мире, в котором ситуации меняются. С самого начала предполагалось, что линейная логика применима к проблемам, важным для ученых-компьютерщиков, и ее первая публикация была не в *«Анналах математики»* , а в *«Теоретической информатике»* . Вычислительные аспекты линейной логики обсуждаются Абрамским [1] и Уодлером [63] и многими другими, а приложения к квантовым вычислениям рассматриваются Гэем [19]. Совсем недавно типы сеансов, способ описания протоколов связи, предложенные Хондой [31], были связаны с интуиционистской линейной логикой Кайреса и Пфеннинга [5] и классической линейной логикой Уодлера [65].
 
-One key to the correspondence between logic and computation is the study of category theory. Both simply-typed lambda calculus and intuitionistic natural deduction correspond to the notion of a cartesian closed category [54]. Many extensions of this idea arise, including an exciting strand of work linking categories, computation, linear logic, and quantum physics [2].
+Одним из ключей к соответствию между логикой и вычислениями является изучение теории категорий. И просто типизированное лямбда-исчисление, и интуиционистская естественная дедукция соответствуют понятию декартовой замкнутой категории [54]. Возникает множество расширений этой идеи, включая захватывающее направление работ, связывающих категории, вычисления, линейную логику и квантовую физику [2].
 
-Vladimir Voevodsky, a winner of the Fields Medal, excited much interest with his recent work on Homotopy Type Theory (HoTT) and Univalent Foundations, which links topology to Propositions as Types. A Special Year devoted to the subject and hosted by the Institute for Advanced Studies at Princeton, Church’s home, led to the publication last year of The HoTT Book, which indeed was hotly awaited, and authored by over 50 mathematicians and computer scientists ranging from Aczel to Zeilenberg.
+Владимир Воеводский, лауреат Филдсовской медали, вызвал большой интерес своей недавней работой по гомотопической теории типов (HoTT) и одновалентным основаниям, которая связывает топологию с предложениями как типами. Особый год, посвященный этой теме и организованный Институтом перспективных исследований в Принстоне, доме Черча, привел к публикации в прошлом году книги HoTT, которую действительно очень ждали, и авторами которой выступили более 50 математиков и компьютерных ученых, начиная с Акселя. в Цайленберг.
 
-Propositions as Types remains a topic of active research.
+Предложения как типы остаются темой активных исследований.
 
-## 7.   Natural deduction
+## 7. Естественный вычет
 
-We now turn to a more formal development, presenting a fragment of natural deduction and a fragment of typed lambda calculus in a style that makes clear the connection between the two.
+Теперь мы обратимся к более формальному развитию, представив фрагмент естественной дедукции и фрагмент типизированного лямбда-исчисления в стиле, который проясняет связь между ними.
 
-We begin with the details of natural deduction as defined by Gentzen [20]. The proof rules are shown in Figure 1. To simplify our discussion, we consider just two of the connectives of natural deduction. We write `A` and `B` as placeholders standing for arbitrary formulas. Conjunction is written `A & B` and implication is written `A ⊃ B`.
+Начнем с деталей естественной дедукции, определенной Генценом [20]. Правила доказательства показаны на рисунке 1. Чтобы упростить обсуждение, мы рассмотрим только две связки естественной дедукции. Мы пишем `A` и `B` как заполнители для произвольных формул. Союз пишется `A & B` , а импликация — `A ⊃ B`
 
-![Figure 1.](images/figure1.png)
+![Рисунок 1.](images/figure1.png)
 
 ---
 
-Figure 1. Gerhard Gentzen (1935) — Natural Deduction
+Рисунок 1. Герхард Генцен (1935) — Естественная дедукция
 
-We represent proofs by trees, where each node of the tree is an instance of a proof rule. Each proof rule consists of zero or more formulas written above a line, called the *premises*, and a single formula written below the line, called the *conclusion*. The interpretation of a rule is that when all the premises hold, then the conclusion follows.
+Мы представляем доказательства в виде деревьев, где каждый узел дерева является экземпляром правила доказательства. Каждое правило доказательства состоит из нуля или более формул, написанных над чертой, называемых *посылками* , и одной формулы, написанной под чертой, называемой *заключением* . Интерпретация правила заключается в том, что если все посылки выполняются, то следует вывод.
 
-The proof rules come in pairs, with rules to introduce and to eliminate each connective, labelled `-I` and `-E` respectively. As we read the rules from top to bottom, introduction and elimination rules do what they say on the tin: the first *introduces* a formula for the connective, which appears in the conclusion but not in the premises; the second *eliminates* a formula for the connective, which appears in a premise but not in the conclusion. An introduction rule describes under what conditions we say the connective holds — how to *define* the connective. An elimination rule describes what we may conclude when the connective holds — how to use the connective.
+Правила доказательства представлены парами, с правилами введения и исключения каждой связки, помеченными `-I` и `-E` соответственно. Когда мы читаем правила сверху вниз, правила введения и исключения делают то, что говорят на консервной банке: первое *вводит* формулу связки, которая появляется в заключении, но не в посылках; второй *исключает* формулу связки, которая появляется в посылке, но не в заключении. Правило введения описывает, при каких условиях, по нашему мнению, связка имеет место, и как ее *определить* . Правило исключения описывает, к какому выводу мы можем прийти, когда связка верна, — как ее использовать.
 
-The introduction rule for conjunction, `&-I`, states that if formula `A` holds and formula `B` holds, then the formula `A & B` must hold as well. There are two elimination rules for conjunction. The first, `&-E1`, states that if the formula `A & B` holds, then the formula `A` must hold as well. The second, `&-E2`, concludes `B` rather than `A`.
+Правило введения конъюнкции `&-I` гласит, что если справедлива формула `A` и справедлива формула `B` , то формулы `A & B` также должны выполняться. Для соединения существуют два правила исключения. Первый, `&-E1` , утверждает, что если справедливы формулы `A & B` , то должна выполняться и формула `A` Второй, `&-E2` , завершает `B` , а не `A`
 
-The introduction rule for implication, `⊃-I`, states that if from the assumption that formula `A` holds we may derive the formula `B`, then we may conclude that the formula `A ⊃ B` holds and *discharge* the assumption. To indicate that `A` is used as an assumption zero, once, or many times in the proof of `B`, we write `A` in brackets and tether it to `B` via ellipses. A proof is complete only when every assumption in it has been discharged by a corresponding use of `⊃-I`, which is indicated by writing the same name (here `x`) as a superscript on each instance of the discharged assumption and on the discharging rule. The elimination rule for implication, `⊃-E`, states that if formula `A ⊃ B` holds and if formula `A` holds, then we may conclude formula `B` holds as well; as mentioned earlier, this rule also goes by the name *modus ponens*.
+Правило введения импликации `⊃-I` гласит, что если из предположения о справедливости формулы `A` мы можем вывести формулу `B` , то мы можем заключить, что формула `A ⊃ B` верна, и *снять* это предположение. Чтобы указать, что `A` используется в качестве предположения ноль, один или несколько раз в доказательстве `B` , мы пишем `A` в скобках и связываем его с `B` через многоточие. Доказательство является полным только тогда, когда каждое допущение в нем было снято соответствующим использованием `⊃-I` , что обозначается написанием того же имени (здесь `x` ) в качестве верхнего индекса в каждом экземпляре снятого предположения и в правиле снятия. Правило исключения импликации `⊃-E` гласит, что если верна формула `A ⊃ B` и если верна формула `A` , то мы можем заключить, что формула `B` также верна; как упоминалось ранее, это правило также называется *modus ponens* .
 
-Critical readers will observe that we use similar language to describe rules (‘when-then’) and formulas (‘implies’). The same idea applies at two levels, the meta level (rules) and the object level (formulas), and in two notations, using a line with premises above and conclusion below for implication at the meta level, and the symbol `⊃` with premise to the left and conclusion to the right at the object level. It is almost as if to understand implication one must first understand implication! This Zeno’s paradox of logic was wryly observed by Lewis Carroll [6], and the phenomenon was deeply investigated by Martin Lof [44]. We need not let it disturb us; everyone possesses a good informal understanding of implication, which may act as a foundation for its formal description.
+Критически настроенные читатели заметят, что мы используем одинаковый язык для описания правил («когда-то») и формул («подразумевается»). Одна и та же идея применяется на двух уровнях: метауровне (правила) и уровне объекта (формулы), а также в двух обозначениях: линия с посылками вверху и заключением внизу для импликации на метауровне, а символ `⊃` с посылкой слева и вывод справа на уровне объекта. Это почти как если бы для того, чтобы понять импликацию, нужно сначала понять импликацию! Этот логический парадокс Зенона был иронично замечен Льюисом Кэрроллом [6], а это явление было глубоко исследовано Мартином Лофом [44]. Нам не следует позволять этому беспокоить нас; каждый обладает хорошим неформальным пониманием импликации, которое может служить основой для ее формального описания.
 
-A proof of the formula
+Доказательство формулы
 
-`(B & A) ⊃ (A & B)`.
+`(B & A) ⊃ (A & B)` .
 
-is shown in Figure 2. In other words, if `B` and `A` hold then `A` and `B` hold. This may seem so obvious as to be hardly deserving of proof! However, the formulas `B ⊃ A` and `A ⊃ B` have meanings that differ, and we need some formal way to conclude that the formulas `B & A` and `A & B` have meanings that are the same. This is what our proof shows, and it is reassuring that it can be constructed from the rules we posit.
+показано на рисунке 2. Другими словами, если выполняются `B` и `A` , то выполняются `A` и `B` Это может показаться настолько очевидным, что едва ли заслуживает доказательства! Однако формулы `B ⊃ A` и `A ⊃ B` имеют разные значения, и нам нужен какой-то формальный способ заключить, что формулы `B & A` и `A & B` имеют одинаковый смысл. Именно это показывает наше доказательство, и обнадеживает то, что оно может быть построено на основе постулируемых нами правил.
 
-![Figure 2.](images/figure2.png)
-
----
-
-Figure 2.  A proof
-
-The proof reads as follows. From `B & A` we conclude `A`, by `&-E2`, and from `B & A` we also conclude `B`, by `&-E1`. From `A` and `B` we conclude `A & B`, by `&-I`. That is, from the assumption `B & A` (used twice) we conclude `A & B` . We discharge the assumption and conclude `(B & A) ⊃ (A & B)` by `⊃-I`, linking the discharged assumptions to the discharging rule by writing `z` as a superscript on each.
-
-Some proofs are unnecessarily roundabout. Rules for simplifying proofs appear in Figure 3, and an example of such a proof appears in Figure 4. Let’s focus on the example first.
-
-![Figure 3.](images/figure3.png)
+![Фигура 2.](images/figure2.png)
 
 ---
 
-Figure 3.  Simplifying proofs
+Рисунок 2. Доказательство
 
-![Figure 4.](images/figure4.png)
+Доказательство выглядит следующим образом. Из `B & A` мы заключаем `A` через `&-E2` , а из `B & A` мы также заключаем `B` через `&-E1` . Из `A` и `B` мы заключаем `A & B` посредством `&-I` . То есть из предположения `B & A` (употребленного дважды) делаем вывод `A & B` . Мы отказываемся от предположения и заключаем `(B & A) ⊃ (A & B)` посредством `⊃-I` , связывая снятые предположения с правилом отказа, записывая `z` в качестве верхнего индекса для каждого.
+
+Некоторые доказательства излишне окольны. Правила упрощения доказательств показаны на рисунке 3, а пример такого доказательства показан на рисунке 4. Давайте сначала сосредоточимся на примере.
+
+![Рисунок 3.](images/figure3.png)
 
 ---
 
-Figure 4.  Simplifying a proof
+Рисунок 3. Упрощающие доказательства
 
-The top of Figure 4 shows a larger proof built from the proof in Figure 2. The larger proof assumes as premises two formulas, `B` and `A`, and concludes with the formula `A & B`. However, rather than concluding it directly we derive the result in a roundabout way, in order to illustrate an instance of `⊃-E`, *modus ponens*. The proof reads as follows. On the left is the proof given previously, concluding in `(B & A) ⊃ (A & B)`. On the right, from `B` and `A` we conclude `B & A` by `&-I`. Combining these yields `A & B` by `⊃-E`.
+![Рисунок 4.](images/figure4.png)
 
-We may simplify the proof by applying the rewrite rules of Figure 3. These rules specify how to simplify a proof when an introduction rule is immediately followed by the corresponding elimination rule. Each rule shows two proofs connected by an arrow, indicating that the *redex* (the proof on the left) may be rewritten, or simplified, to yield the *reduct* (the proof on the right). Rewrites always take a valid proof to another valid proof.
+---
 
-For `&`, the redex consists of a proof of `A` and a proof of `B`, which combine to yield `A & B` by `&-I`, which in turn yields `A` by `&-E1`. The reduct consists simply of the proof of `A`, discarding the unneeded proof of `B`. There is a similar rule, not shown, to simplify an occurrence of `&-I` followed by `&-E2`.
+Рисунок 4. Упрощение доказательства
 
-For `⊃`, the redex consists of a proof of `B` from assumption `A`, which yields `A ⊃ B` by `⊃-I`, and a proof of `A`, which combine to yield `B` by `⊃-E`. The reduct consists of the same proof of `B`, but now with every occurrence of the assumption `A` replaced by the given proof of `A`. The assumption `A` may be used zero, once, or many times in the proof of `B` in the redex, so the proof of `A` may be copied zero, once, or many times in the proof of `B` in the reduct. For this reason, the reduct may be larger than the redex, but it will be simpler in the sense that it has removed an unnecessary detour via the subproof of `A ⊃ B`.
+В верхней части рисунка 4 показано более крупное доказательство, построенное на основе доказательства на рисунке 2. Более крупное доказательство предполагает в качестве предпосылок две формулы, `B` и `A` , и завершается формулами `A & B` Однако вместо того, чтобы сделать вывод напрямую, мы получаем результат окольным путем, чтобы проиллюстрировать пример `⊃-E` , *modus ponens* . Доказательство выглядит следующим образом. Слева приведено ранее доказательство, заключающееся в `(B & A) ⊃ (A & B)` . Справа из `B` и `A` заключаем `B & A` через `&-I` . Объединение этих результатов дает `A & B` по `⊃-E` .
 
-We can think of the assumption of `A` in `⊃-I` as a debt which is discharged by the proof of A provided in `⊃-E`. The proof in the redex accumulates debt and pays it off later; while the proof in the reduct pays directly each time the assumption is used. Proof debt differs from monetary debt in that there is no interest, and the same proof may be duplicated freely as many times as needed to pay off an assumption, the very property which money, by being hard to counterfeit, is designed to avoid!
+Мы можем упростить доказательство, применив правила перезаписи, показанные на рисунке 3. Эти правила определяют, как упростить доказательство, когда за правилом введения сразу следует соответствующее правило исключения. В каждом правиле показаны два доказательства, соединенные стрелкой, что указывает на то, что *редекс* (доказательство слева) может быть переписан или упрощен, чтобы получить *редукцию* (доказательство справа). Переписывание всегда переносит действительное доказательство в другое действительное доказательство.
 
-Figure 4 demonstrates use of these rules to simplify a proof. The first proof contains an instance of `⊃-I` followed by `⊃-E`, and is simplified by replacing each of the two assumptions of `B & A` on the left by a copy of the proof of `B & A` on the right. The result is the second proof, which as a result of the replacement now contains an instance of `&-I` followed by `&-E2`, and another instance of `&-I` followed by `&-E1`. Simplifying each of these yields the third proof, which derives `A & B` directly from the assumptions `A` and `B`, and can be simplified no further.
+Для `&` редекс состоит из доказательства `A` и доказательства `B` , которые в совокупности дают `A & B` с помощью `&-I` , что, в свою очередь, дает `A` с помощью `&-E1` . Редукция состоит просто из доказательства `A` , отбрасывая ненужное доказательство `B` Существует аналогичное правило (не показано), позволяющее упростить появление `&-I` за которым следует `&-E2` .
 
-It is not hard to see that proofs in normal form satisfy the Subformula Property: every formula of such a proof must be a subformula of one of its undischarged assumptions or of its conclusion. The proof in Figure 2 and the final proof of Figure 4 both satisfy this property, while the first proof of Figure 4 does not, since `(B & A) D (A & B)` is not a subformula of `A & B`.
+Для `⊃` редекс состоит из доказательства `B` из предположения `A` , которое дает `A ⊃ B` посредством `⊃-I` , и доказательства `A` , которые в совокупности дают `B` посредством `⊃-E` . Редукция состоит из того же доказательства `B` , но теперь каждое появление предположения `A` заменяется данным доказательством `A` Предположение `A` может использоваться ноль, один или много раз при доказательстве `B` в редексе, поэтому доказательство `A` может быть скопировано ноль, один или много раз при доказательстве `B` в редукте. По этой причине редукт может быть больше, чем редекс, но он будет проще в том смысле, что он устранит ненужный обход посредством поддоказательства `A ⊃ B` .
 
-## 8.   Lambda calculus
+Мы можем думать о допущении `A` в `⊃-I` как о долге, который погашается доказательством A, представленным в `⊃-E` . Доказательство в редексе накапливает долг и выплачивает его позже; в то время как доказательство в сокращении приносит пользу каждый раз, когда используется предположение. Долг с доказательствами отличается от денежного долга тем, что здесь нет процентов, и одно и то же доказательство можно свободно дублировать столько раз, сколько необходимо для погашения предположения, а это то самое свойство, которого деньги, поскольку их трудно подделать, призваны избегать!
 
-We now turn our attention to the simply-typed lambda calculus of Church [10]. The type rules are shown in Figure 5. To simplify our discussion, we take both products and functions as primitive types; Church’s original calculus contained only function types, with products as a derived construction. We now write `A` and `B` as placeholders for arbitrary types, and `L`, `M`, `N` as placeholder for arbitrary terms. Product types are written `A x B` and function types are written `A → B`. Now instead of formulas, our premises and conclusions are judgments of the form
+На рис. 4 показано использование этих правил для упрощения доказательства. Первое доказательство содержит экземпляр `⊃-I` за которым следует `⊃-E` , и упрощается за счет замены каждого из двух предположений `B & A` слева копией доказательства `B & A` справа. Результатом является второе доказательство, которое в результате замены теперь содержит экземпляр `&-I` , за которым следует `&-E2` , и еще один экземпляр `&-I` , за которым следует `&-E1` . Упрощение каждого из них приводит к третьему доказательству, которое выводит `A & B` непосредственно из предположений `A` и `B` и не может быть упрощено дальше.
+
+Нетрудно видеть, что доказательства в нормальной форме удовлетворяют свойству подформулы: каждая формула такого доказательства должна быть подформулой одного из его невыполненных предположений или его заключения. Доказательство на рисунке 2 и окончательное доказательство на рисунке 4 удовлетворяют этому свойству, тогда как первое доказательство на рисунке 4 — нет, поскольку `(B & A) D (A & B)` не является подформулой `A & B` .
+
+## 8. Лямбда-исчисление
+
+Теперь обратим внимание на просто типизированное лямбда-исчисление Чёрча [10]. Правила типов показаны на рисунке 5. Чтобы упростить обсуждение, мы возьмем и продукты, и функции в качестве примитивных типов; Исходное исчисление Чёрча содержало только типы функций, производными от которых были произведения. Теперь мы пишем `A` и `B` как заполнители для произвольных типов, а `L` , `M` , `N` как заполнители для произвольных терминов. Типы продуктов записываются `A x B` , а типы функций — `A → B` Теперь вместо формул нашими посылками и выводами являются суждения вида
 
 `M:A`
 
-indicating that term M has type A.
+указывая, что термин M имеет тип A.
 
-![Figure 5.](images/figure5.png)
+![Рисунок 5.](images/figure5.png)
 
 ---
 
-Figure 5. Alonzo Church (1935) — Lambda Calculus
+Рисунок 5. Черч Алонсо (1935 г.) — лямбда-исчисление
 
-Like proofs, we represent type derivations by trees, where each node of the tree is an instance of a type rule. Each type rule consists of zero or more judgments written above a line, called the premises, and a single judgment written below the line, called the conclusion. The interpretation of a rule is that when all the premises hold, then the conclusion follows.
+Подобно доказательствам, мы представляем производные типов в виде деревьев, где каждый узел дерева является экземпляром правила типа. Правило каждого типа состоит из нуля или более суждений, написанных над линией и называемых посылками, и одного суждения, написанного под линией и называемого заключением. Интерпретация правила заключается в том, что если все посылки выполняются, то следует вывод.
 
-Like proof rules, type rules come in pairs. An introduction rule describes how to *define* or *construct* a term of the given type, while an elimination rule describes how to use or *deconstruct* a term of the given type.
+Как и правила доказательства, правила типов существуют в парах. Правило введения описывает, как *определить* или *построить* термин данного типа, а правило исключения описывает, как использовать или *деконструировать* термин данного типа.
 
-The introduction rule for products, `×-I`, states that if term `M` has type `A` and term `N` has type `B`, then we may form the pair term `⟨M,N⟩` of product type `A × B`. There are two elimination rules for products. The first, `×-E1` , states that if term `L` has type `A × B`, then we may form the term `π₁ L` of type `A`, which selects the first component of the pair. The second, `×-E2` is similar, save that it forms the term `π₂ L` of type `B`.
+Правило введения для продуктов `×-I` гласит, что если термин `M` имеет тип `A` , а термин `N` имеет тип `B` , то мы можем сформировать парный термин `⟨M,N⟩` типа продукта `A × B` Для продуктов действуют два правила исключения. Первый, `×-E1` , утверждает, что если терм `L` имеет тип `A × B` , то мы можем сформировать терм `π₁ L` типа `A` , который выбирает первый компонент пары. Второй, `×-E2` аналогичен, за исключением того, что он образует терм `π₂ L` типа `B`
 
-The introduction rule for functions, `→-I`, states that if given a variable `x` of type `A` we have formed a term `N` of type `B`, then we may form the lambda term `λx. N` of function type `A → B`. The variable `x` appears free in `N` and bound in `λx. N`. Undischarged assumptions correspond to free variables, while discharged assumptions correspond to bound variables. To indicate that the variable `x` may appear zero, once, or many times in the term `N`, we write `x : A` in brackets and tether it to `N : B` via ellipses. A term is closed only when every variable in it is bound by a corresponding λ term. The elimination rule for functions, `→-E`, states that given term `L` of type `A → B` and term `M` of type `A` we may form the application term `L M` of type `B`.
+Правило введения для функций `→-I` гласит, что если для переменной `x` типа `A` мы сформировали терм `N` типа `B` , то мы можем сформировать лямбда-терм `λx. N` типа функции `A → B` Переменная `x` оказывается свободной в `N` и связанной в `λx. N` Невыполненные предположения соответствуют свободным переменным, а снятые предположения соответствуют связанным переменным. Чтобы указать, что переменная `x` может появляться в термине `N` ноль, один или несколько раз, мы пишем `x : A` в скобках и привязываем ее к `N : B` с помощью эллипсов. Терм замкнут только тогда, когда каждая переменная в нем связана соответствующим термом λ. Правило исключения для функций `→-E` гласит, что, учитывая терм `L` типа `A → B` и терм `M` типа `A` мы можем сформировать прикладной терм `LM` типа `B` .
 
-For natural deduction, we noted that there might be confusion between implication at the meta level and the object level. For lambda calculus the distinction is clearer, as we have implication at the meta level (if terms above the line are well typed so are terms below) but functions at the object level (a function has type `A → B` because if it is passed a value of type `A` then it returns a value of type `B`). What previously had been discharge of assumptions (perhaps a slightly diffuse concept) becomes binding of variables (a concept understood by most computer scientists).
+Что касается естественной дедукции, мы отметили, что может возникнуть путаница между импликацией на метауровне и уровне объекта. Для лямбда-исчисления различие более четкое, поскольку у нас есть последствия на метауровне (если термины над строкой хорошо типизированы, то и термины ниже), но функции на уровне объекта (функция имеет тип `A → B` , потому что, если ей передается значение типа `A` , то возвращается значение типа `B` ). То, что раньше было освобождением от предположений (возможно, несколько расплывчатая концепция), становится связыванием переменных (концепция, понятная большинству ученых-компьютерщиков).
 
-The reader will by now have observed a striking similarity between Gentzen’s rules from the preceding section and Church’s rules from this section: ignoring the terms in Church’s rules then they are identical, if one replaces `&` by `×` and `⊃` by `→`. The colouring of the rules is chosen to highlight the similarity.
+Читатель уже заметил поразительное сходство между правилами Генцена из предыдущего раздела и правилами Чёрча из этого раздела: если игнорировать термины в правилах Чёрча, то они будут идентичны, если заменить `&` на `×` и `⊃` на `→` . Цвет правил выбран так, чтобы подчеркнуть сходство.
 
-A program of type
+Программа типа
 
 `(B × A) → (A × B)`
 
-is shown in Figure 6. Whereas the difference between `B & A` and `A & B` appears a mere formality, the difference between `B × A` and `A × B` is easier to appreciate: converting the latter to the former requires swapping the elements of the pair, which is precisely the task performed by the program corresponding to our former proof.
+показано на рисунке 6. В то время как разница между `B & A` и `A & B` кажется простой формальностью, разницу между `B × A` и `A × B` легче оценить: преобразование последнего в первое требует замены элементов пары , что и является задачей программы, соответствующей нашему предыдущему доказательству.
 
-![Figure 6.](images/figure6.png)
-
----
-
-Figure 6. A program
-
-The program reads as follows. From variable `z` of type `B × A` we form term `n₂ z` of type `A` by `x -E₂` and also term `π2 z` of type `B` by `×-E2`. From these two we form the pair `π1 z` of type `A × B` by `×-I`. Finally, we bind the free variable `z` to form the lambda term `λz.⟨π2 z, π1 z⟩` of type `(B × A) → (A × B)` by `→-I`, connecting the bound typings to the binding rule by writing `z` as a superscript on each. The function accepts a pair and swaps its elements, exactly as described by its type.
-
-A program may be evaluated by rewriting. Rules for evaluating programs appear in Figure 7, and an example appears in Figure 8. Let’s focus on the example first.
-
-![Figure 7.](images/figure7.png)
+![Рисунок 6.](images/figure6.png)
 
 ---
 
-Figure 7.  Evaluating programs
+Рисунок 6. Программа
 
-The top of Figure 8 shows a larger program built from the program in Figure 6. The larger program has two free variables, `y` of type `B` and `x` of type `A`, and constructs a value of type `A × B` . However, rather than constructing it directly we reach the result in a roundabout way, in order to illustrate an instance of `→-E`, function application. The program reads as follows. On the left is the program given previously, forming a function of type `(B × A) → (A × B)`. On the right, from `B` and `A` we form the pair `⟨y, x⟩` of type `B × A` by `×-I`. Applying the function to the pair forms a term of type `A × B` by `→-E`.
+Программа звучит следующим образом. Из переменной `z` типа `B × A` формируем терм `n₂ z` типа `A` по `x -E₂` , а также терм `π2 z` типа `B` по `×-E2` . Из этих двух формируем пару `π1 z` типа `A × B` посредством `×-I` . Наконец, мы связываем свободную переменную `z` , чтобы сформировать лямбда-терм `λz.⟨π2 z, π1 z⟩` типа `(B × A) → (A × B)` посредством `→-I` , соединяя связанные типизации с правилом связывания, записывая `z` в качестве верхнего индекса для каждого. Функция принимает пару и меняет местами ее элементы точно так, как описано ее типом.
 
-![Figure 8.](images/figure8.png)
+Программу можно оценить путем переписывания. Правила оценки программ показаны на рисунке 7, а пример — на рисунке 8. Давайте сначала сосредоточимся на примере.
 
----
-
-Figure 8.  Evaluating a program
-
-We may evaluate this program by applying the rewrite rules of Figure 7. These rules specify how to rewrite a term when an introduction rule is immediately followed by the corresponding elimination rule. Each rule shows two derivations connected by an arrow, indicating that the redex (the term on the left) may be rewritten, or evaluated, to yield the reduct (the term on the right). Rewrites always take a valid type derivation to another valid type derivation, ensuring that rewrites preserve types, a property known as subject reduction or type soundness.
-
-For `×`, the redex consists of term `M` of type `A` and term `N` of type `B`, which combine to yield term `hM, N}` of type `A × B` by `×-I`, which in turn yields term `π1 ⟨M,N⟩` of type `A` by `×-Eᵢ`. The reduct consists simply of term `M` of type `A`, discarding the unneeded term `N` of type `B`. There is a similar rule, not shown, to rewrite an occurrence of `×-I` followed by `×-E2` .
-
-For `→`, the redex consists of a derivation of term `N` of type `B` from variable `x` of type `A`, which yields the lambda term `λx. N` of type `A → B` by `→-I`, and a derivation of term `M` of type `A`, which combine to yield the application `(λx. N) M` of type `B` by `→-E`. The reduct consists of the term `N [M/x]` that replaces each free occurrence of the variable `x` in term `N` by term `M` . Further, if in the derivation that `N` has type `B` we replace each assumption that `x` has type `A` by the derivation that `M` has type `A`, we get a derivation showing that `N [M/x]` has type `B`. Since the variable `x` may appear zero, once, or many times in the term `N`, the term `M` may be copied zero, once, or many times in the reduct `N [M/x]`. For this reason, the reduct may be larger than the redex, but it will be simpler in the sense that is has removed a subterm of type `A → B`. Thus, discharge of assumptions corresponds to applying a function to its argument.
-
-Figure 8 demonstrates use of these rules to evaluate a program. The first program contains an instance of `→-I` followed by `→-E`, and is rewritten by replacing each of the two occurrences of `z` of type `B x A` on the left by a copy of the term `⟨y, x⟩` of type `B × A` on the right. The result is the second program, which as a result of the replacement now contains an instance of `×-I` followed by `×-E2`, and another instance of `×-I` followed by `×-E1` . Rewriting each of these yields the third program, which derives the term `⟨x, y⟩` of type `A × B`, and can be evaluated no further.
-
-Hence, simplification of proofs corresponds exactly to evaluation of programs, in this instance demonstrating that applying the function to the pair indeed swaps its elements.
-
-##9.   Conclusion
-
-Proposition as Types informs our view of the universality of certain programming languages.
-
-The Pioneer spaceship contains a plaque designed to communicate with aliens, if any should ever intercept it (see Figure 9). They may find some parts of it easier to interpret than others. A radial diagram shows the distance of fourteen pulsars and the centre of the galaxy from Sol. Aliens are likely to determine that the length of each line is proportional to the distances to each body. Another diagram shows humans in front of a silhouette of Pioneer. If Star Trek gives an accurate conception of alien species, they may respond “They look just like us, except they lack pubic hair.” However, if the aliens’s perceptual system differs greatly from our own, they may be unable to decipher these squiggles.
-
-![Figure 9.](images/figure9.png)
+![Рисунок 7.](images/figure7.png)
 
 ---
 
-Figure 9. Plaque on Pioneer Spaceship
+Рисунок 7. Оценка программ
 
-What would happen if we tried to communicate with aliens by transmitting a computer program? In the movie Independence Day, the heroes destroy the invading alien mother ship by infecting it with a computer virus. Close inspection of the transmitted program shows it contains curly braces—it is written in a dialect of `C`! It is unlikely that alien species would program in `C`, and unclear that aliens could decipher a program written in `C `if presented with one.
+В верхней части рисунка 8 показана более крупная программа, созданная на основе программы, показанной на рис. 6. Более крупная программа имеет две свободные переменные, `y` типа `B` и `x` типа `A` , и создает значение типа `A × B` Однако вместо того, чтобы строить его напрямую, мы достигаем результата окольным путем, чтобы проиллюстрировать пример применения функции `→-E` . Программа звучит следующим образом. Слева приведена ранее приведенная программа, образующая функцию типа `(B × A) → (A × B)` . Справа из `B` и `A` формируем пару `⟨y, x⟩` типа `B × A` посредством `×-I` . Применение функции к паре образует терм типа `A × B` посредством `→-E` .
 
-What about lambda calculus? Propositions as Types tell us that lambda calculus is isomorphic to natural deduction. It seems difficult to conceive of alien beings that do not know the fundamentals of logic, and we might expect the problem of deciphering a program written in lambda calculus to be closer to the problem of understanding the radial diagram of pulsars than that of understanding the image of a man and a woman on the Pioneer plaque.
-
-We might be tempted to conclude that lambda calculus is universal, but first let’s ponder the suitability of the word ‘universal’. These days the multiple worlds interpretation of quantum physics is widely accepted. Scientists imagine that in different universes one might encounter different fundamental constants, such as the strength of gravity or the Planck constant. But easy as it may be to imagine a universe where gravity differs, it is difficult to conceive of a universe where fundamental rules of logic fail to apply. Natural deduction, and hence lambda calculus, should not only be known by aliens throughout our universe, but also throughout others. So we may conclude it would be a mistake to characterise lambda calculus as a universal language, because calling it universal would be *too limiting*.
-
-**Acknowledgements**. Thank you to Gershom Bazerman, Pete Bevin, Guy Blelloch, Rintcius Blok, Ezra Cooper, Ben Darwin, Benjamin Denckla, Peter Dybjer, Johannes Emerich, Martin Er-wig, Yitz Gale, Mikhail Glushenkov, Gabor Greif, Vinod Grover, Sylvain Henry, Philip Holzenspies, William Howard, John Hughes, Colin Lupton, Daniel Marsden, Craig McLaughlin, Tom Moertel, Simon Peyton-Jones, Benjamin Pierce, Lee Pike, Andres Sicard-Ramlrez, Scott Rostrup, Dann Toliver, Moshe Vardi, Jeremy Yal-lop, Richard Zach, Leo Zovik, and the referees. This work was funded under EPSRC EP/K034413/1.
-
-Philip Wadler (wadler@inf.ed.ac.uk, @PhilipWadler) is Professor of Theoretical Computer Science in the Laboratory for Foundations of Computer Science in the School of Informatics at the University of Edinburgh, Scotland.
-
-## A. Howard on Curry-Howard
-
-While writing this paper, I realised Iwas unclear on parts of the history. Below is a letter I wrote to William Howard and his response (with corrections he provided after I asked to publish it). I believe it is a useful historical document, and am grateful to Howard for his permission to publish. The correspondence refers to Shell-Gellasch [55], and references to Figures 5 and 6 in the following are to the figures in this paper.
-
-Here is my original request.
+![Рисунок 8.](images/figure8.png)
 
 ---
 
-Subject: The Formulae-as-Types Notion of Construction
+Рисунок 8. Оценка программы
+
+Мы можем оценить эту программу, применив правила перезаписи, показанные на рисунке 7. Эти правила определяют, как перезаписать термин, когда за правилом введения сразу следует соответствующее правило исключения. Каждое правило показывает два вывода, соединенных стрелкой, что указывает на то, что редекс (термин слева) может быть переписан или вычислен, чтобы получить редукцию (термин справа). При перезаписи всегда происходит перенос допустимого производного типа в другое допустимое производное типа, гарантируя, что при перезаписи сохраняются типы — свойство, известное как субъектная редукция или корректность типа.
+
+Для `×` редекс состоит из терма `M` типа `A` и терма `N` типа `B` , которые в совокупности дают терм `hM, N}` типа `A × B` с помощью `×-I` , что, в свою очередь, дает терм `π1 ⟨M,N⟩` введите `A` по `×-Eᵢ` . Редукция состоит просто из термина `M` типа `A` , отбрасывая ненужный термин `N` типа `B` Существует аналогичное правило (не показано), позволяющее переписать вхождение `×-I` за которым следует `×-E2` .
+
+Для `→` редекс состоит из вывода термина `N` типа `B` из переменной `x` типа `A` , что дает лямбда-терм `λx. N` типа `A → B` с помощью `→-I` и вывод термина `M` типа `A` , которые в совокупности дают применение `(λx. N) M` типа `B` с помощью `→-E` . Редукция состоит из термина `N [M/x]` который заменяет каждое свободное вхождение переменной `x` в термине `N` на термин `M` Далее, если в выводе о том, что `N` имеет тип `B` мы заменим каждое предположение о том, что `x` имеет тип `A` , выводом о том, что `M` имеет тип `A` , мы получим вывод, показывающий, что `N [M/x]` имеет тип `B` Поскольку переменная `x` может появляться в термине `N` ноль, один или несколько раз, термин `M` может быть скопирован ноль, один или много раз в сокращении `N [M/x]` . По этой причине редукт может быть больше, чем редекс, но он будет проще в том смысле, что удален подтермин типа `A → B` Таким образом, освобождение от допущений соответствует применению функции к ее аргументу.
+
+На рис. 8 показано использование этих правил для оценки программы. Первая программа содержит экземпляр `→-I` за которым следует `→-E` , и переписывается путем замены каждого из двух вхождений `z` типа `B x A` слева копией термина `⟨y, x⟩` типа `B × A` справа. В результате получается вторая программа, которая в результате замены теперь содержит экземпляр `×-I` за которым следует `×-E2` , и ещё один экземпляр `×-I` за которым следует `×-E1` . Переписывание каждой из них дает третью программу, которая выводит термин `⟨x, y⟩` типа `A × B` и не может быть вычислена дальше.
+
+Следовательно, упрощение доказательств в точности соответствует вычислению программ, демонстрируя в данном случае, что применение функции к паре действительно меняет местами ее элементы.
+
+##9. Заключение
+
+Предложение как тип формирует наше представление об универсальности некоторых языков программирования.
+
+На космическом корабле «Пионер» имеется табличка, предназначенная для связи с инопланетянами, если кто-нибудь когда-нибудь перехватит ее (см. Рисунок 9). Им может быть легче интерпретировать некоторые его части, чем другие. Радиальная диаграмма показывает расстояние четырнадцати пульсаров и центра галактики от Солнца. Инопланетяне, скорее всего, решат, что длина каждой линии пропорциональна расстоянию до каждого тела. На другой диаграмме изображены люди перед силуэтом Пионера. Если «Звездный путь» дает точное представление об инопланетных видах, они могут ответить: «Они похожи на нас, за исключением того, что у них нет лобковых волос». Однако если система восприятия инопланетян сильно отличается от нашей, они могут быть не в состоянии расшифровать эти закорючки.
+
+![Рисунок 9.](images/figure9.png)
 
 ---
 
-Dear Prof Howard,
+Рисунок 9. Мемориальная доска на космическом корабле «Пионер».
 
-My research has been greatly influenced by your own, particularly the paper cited in my subject. I am now writing a paper on the field of work that grew out of that paper, which was solicited for publications by the Communications of the ACM (the flagship of the professional organisation for computer scientists). A draft of the paper is attached.
+Что произойдет, если мы попытаемся общаться с инопланетянами, передав компьютерную программу? В фильме «День независимости» герои уничтожают вторгшийся корабль-базу пришельцев, заразив его компьютерным вирусом. При внимательном рассмотрении переданной программы видно, что она содержит фигурные скобки — она написана на диалекте `C` ! Маловероятно, что инопланетные виды будут программировать на `C` , и неясно, смогут ли инопланетяне расшифровать программу, написанную на `C` , если им предоставить ее.
 
-I would like to portray the history of the subject accurately. I have read your interview with Shell-Gallasch, but a few questions remain, which I hope you will be kind enough to answer.
+А как насчет лямбда-исчисления? Предложения как типы говорят нам, что лямбда-исчисление изоморфно естественной дедукции. Кажется трудным представить инопланетные существа, не знающие основ логики, и можно было бы ожидать, что проблема расшифровки программы, написанной с помощью лямбда-исчисления, будет ближе к проблеме понимания радиальной диаграммы пульсаров, чем к проблеме понимания изображения мужчины и женщины на мемориальной доске «Пионер».
 
-Your paper breaks into two halves. The first describes the correspondence between propositional logic and simple types, the second introduces the correspondence between predicate logic and dependent types. Did you consider the first half to be new material or merely a reprise of what was known? To what extent do you consider your work draws on or was anticipated by the work of Heyt-ing and Kolmogorov, and Kleene’s realisability? To what extent did your work influence the subsequent work of de Bruijn and Martin Lof? What was the history of your mimeograph on the subject, and why was it not published until the Curry Festschrift in 1980?
+У нас может возникнуть соблазн заключить, что лямбда-исчисление универсально, но сначала давайте поразмыслим о том, подходит ли слово «универсальный». В наши дни широко распространена интерпретация квантовой физики, основанная на множественности миров. Ученые предполагают, что в разных вселенных можно встретить разные фундаментальные константы, такие как сила гравитации или постоянная Планка. Но как бы легко ни было представить вселенную, в которой гравитация различается, трудно представить себе вселенную, в которой фундаментальные правила логики не применимы. Естественная дедукция и, следовательно, лямбда-исчисление должны быть известны инопланетянам не только во всей нашей Вселенной, но и во всех других странах. Таким образом, мы можем заключить, что было бы ошибкой характеризовать лямбда-исчисление как универсальный язык, поскольку называть его универсальным было бы *слишком ограничивающе* .
 
-Many thanks for your consideration, not to mention for founding my field! Yours, —P
+**Благодарности** . Спасибо Гершому Базерману, Питу Бевину, Гаю Блеллоху, Ринциусу Блоку, Эзре Куперу, Бену Дарвину, Бенджамину Денкла, Питеру Дюбьеру, Йоханнесу Эмериху, Мартину Эр-вигу, Итцу Гейлу, Михаилу Глушенкову, Габору Грайфу, Виноду Гроверу, Сильвену Генри, Филип Холзенспис, Уильям Ховард, Джон Хьюз, Колин Луптон, Дэниэл Марсден, Крэйг Маклафлин, Том Мортел, Саймон Пейтон-Джонс, Бенджамин Пирс, Ли Пайк, Андрес Сикард-Рамлрес, Скотт Роструп, Данн Толивер, Моше Варди, Джереми Йаллоп , Ричард Зак, Лео Зовик и судьи. Эта работа финансировалась в рамках EPSRC EP/K034413/1.
 
-And here is his response:
+Филип Уодлер (wadler@inf.ed.ac.uk, @PhilipWadler) — профессор теоретической информатики в Лаборатории основ информатики Школы информатики Эдинбургского университета, Шотландия.
 
----
+## А. Ховард о Карри-Ховарде
 
-Dear Prof. Wadler,
+Во время написания этой статьи я понял, что мне неясны некоторые аспекты истории. Ниже приведено письмо, которое я написал Уильяму Ховарду, и его ответ (с исправлениями, которые он внес после того, как я попросил его опубликовать). Я считаю, что это полезный исторический документ, и благодарен Говарду за разрешение опубликовать его. Переписка относится к Шеллу-Геллашу [55], а ссылки на рисунки 5 и 6 в дальнейшем относятся к рисункам в этой статье.
 
----
-
-As mentioned in the interview with Shell-Gellasch, my work on propositions as types (p-a-t) originated from my correspondence with Kreisel, who was very interested in getting a mathematical notion (i.e., in ordinary mathematics) for Brouwer’s idea of a construction (as explained by Heyting). I was not familiar with the work of Brouwer or Heyting, let alone Kolmogorov, but, from what Kreisel had to say, the idea was clear enough: a construction of a ^ в was to be a construction F which, acting on a construction A of a, gives a construction B of в. So we have constructions acting on constructions, rather like functionals acting on functionals. So, as an approximation,
-
-(1) let’s take “construction” to mean “functional”.
-
-But what kind of functionals? In constructive mathematics, a functional is not given as a set of ordered pairs. Rather,
-
-(2) to give a functional is to give not only the action or process it performs but also to give its type (domain and counterdomain).
-
-Clearly, the type structure is going to be complicated. I set myself the project of finding a suitable notation for the type symbols. So one needs a suitable type symbol for the functional F, above. Well, just take it to be alpha itself (at this point, I was thinking of propositional logic). Suddenly I remembered something that Curry had talked about in the logic seminar during my time at Penn State. If we consider typed combinators, and look at the structure of the type symbols of the basic combinators (e.g., S, K, I), we see that each of the type symbols corresponds to (is isomorphic to) one of the axioms of pure implicative logic. Well! This was just what I needed!
-
-How do we formulate the following notion?
-
-(3) `F` is a construction of phi.
-
-Consider the case in which `φ` has the form `α ⊃ β` The temptation is to define “`F` is a construction of `α ⊃ β` to mean “for all `A`: if `A` is a construction of `α`, then `F A` is a construction of `β`”. Well, that is circular, because we have used “if ... then ...” to define implication. This is what you call “Zenos paradox of logic”. I avoided this circularity by taking (3) to mean:
-
-(4) `F` is assigned the type `ф` according to the way `F` is built up; i.e., the way in which `F` is constructed.
-
-Thus `F` is a construction of `ф` by construction. Your Figure 6 illustrates precisely what I meant by this. (I did not have that beautiful notation at the time but it conveys what I meant.)
-
-To summarize: My basic insight consisted simultaneously of the thoughts (2) and (4) plus the thought that Curry’s observation provided the means to implement (2), (4). Let me say this in a different way. The thought (2) was not new. I had had the thought (2) for many years, ever since I had begun to study primitive recursive functionals of finite type. What was new was the thought (4) plus the recognition that Curry’s idea provided the way to implement (4). I got this basic insight in the summer of 1966. Once I saw how to do it with combinators, I wondered what it would look like from the vewpoint of the lambda calculus, and saw, to my delight, that this corresponded to the intuitionistic version of Gentzen’s sequent calculus.
-
-Incidentally, Curry’s observation concerning the types of the basic combinators is presented in his book with Feys (Curry-Feys), but I was unaware of this, though I had owned a copy for several years (since 1959, when I was hired at Penn State). After working out the details of p-a-t over a period of several months, I began to think about writing it up, so I thought I had better see if it is in the book. Well, it is easy enough to find if you know what you are looking for. On looking at it, I got a shock: not only had they extended the ideas to Gentzen’s sequent calculus, but they had the connection between elimination of cuts from a derivation and normalization of the corresponding lambda term. But, on a closer look, I concluded that they had a connection but not the connection. It turns out that I was not quite right about that either. See my remark about their Theorem 5, below. Not that it would have mattered much for anything I might have published: even if they had the connection between Gentzen’s sequent calculus and the lambda calculus, I had a far-reaching generalization (i.e., to Heyting arithmetic).
-
-The above is more detailed than would be required to answer your questions, but I needed to write this out to clarify my thoughts about the matter; so I may as well include the above, since I think it will interest you. It answers one of your questions, “To what extent do you consider your work draws on or was anticipated by the work of Heyting and Kolmogorov, and Kleene’s realisability?” Namely, my work draws on the work of Heyting and Brouwer, via Kreisel’s explanation of that work to me. None of it was anticipated by the work of Heyting, Kolmogorov or Kleene: they were not thinking of functionals of finite type. Though I was familiar with Kleene’s recursive realizability, I was not thinking about it at the time. Admittedly, it touches on ideas about Brouwer’s constructions but is far from capturing the notion of a construction (actually, Kleene once made remarks to this effect, I forget where). Because of the relation between constructions and Kleene’s recursive realizability, there could have been some unconscious influence; but, in any case, not a significant influence.
-
-“Did your work influence the subsequent work of de Bruijn and Martin Lof?” As far as I know, my work had no influence on the work of de Bruijn. His work appears to be completely independent of mine. I do recall that he once sent me a package of Automath material. The project of a computer program for checking existing proofs did not appear very interesting and I did not reply. What I would have been interested in is a program for finding proofs of results that had not yet been proved! Even a proof-assistant would have been fine. Why did he send me the Automath material? I don’t recall what year it was. Sometime in the 1970s. Whatever the accompanying letter, it was not informative; merely something like: ”Dear Professor Howard, you may be interested in the following material ...”. Since that time, I have seen two or three articles by him, and I have a more favorable impression. It is good, solid work. Obviously original. He discovered the idea of derivations as terms, and the accompanying idea of formulae-as-types, on his own. He uses lambda terms but, I think, only for purposes of description. In other words, I don’t think that he has the connection between normalization and cut-elimination, but I have not made an extensive examination of his work. In fact, does he use a Gentzen system at all? I just don’t know. The latter two questions would easily be answered by anyone familiar with his work. In any case, give him credit where credit is due. There are enough goodies for everyone!
-
-My influence on Martin-Lof? No problem there. I met him at the Buffalo 1968 conference and I told him my ideas. His instant reaction was: “Now, why didn’t I think of that?” He had a visiting appointment at UIC for the academic year 1968-1969, so we had lots of opportunity to talk, and he started developing his own approach to the ideas. In January 1969, mainly to make sure that we were both clear on who had discovered what, I wrote up my own ideas in the form of handwritten notes. By then, Xerox machines were prevalent, so I sent a copy to Kreisel, and he gave copies to various people, including Girard. At least, I think that is how Girard got a copy, or maybe Martin-Lof gave him one. I like Martin-Lof’s work. I could say more about this, but the short answer to your question is: Martin-Lof’s work originated from mine. He has always given me credit and we are good friends.
-
-On further thought, I need to mention that, in that first conversation, Martin-Lof suggested that the derivations-as-terms idea would work particularly well in connection with Prawitz’s theory of natural deduction. I thought: okay, but no big deal. Actually, at that time, I was not familiar with Prawitz’s results (or, if at all, then only vaguely). But it was a bigger deal than I had thought, because Prawitz’s reductions steps for a deduction correspond direcly to reduction steps for the associated lambda term! Actually, for most purposes, I like the sequent formulation of natural deduction as given in pages 33 and 88 of Sorensen and Urzyczyn (2006). In fact, if we add left-implication-introduction to this (let’s confine ourselves to pure implicative logic), the resulting system P# is pretty interesting. All occurrences of modus ponens can be eliminated, not just those which are preceded by left-implication-introduction. This is what I am up to in my JSL 1980 paper, “Ordinal analysis of terms of finite type”. Also, the cut rule is easy to derive in P# (just consider, for typed lambda terms: a well-formed term substituted into a well-formed term results in a well-formed term); hence P# is is a conservative extension of the system P* in Part I of my little paper in the Curry Festschrift.
-
-The phrase formulae-as-types was coined by Kreisel in order that we would have a name for the subject matter in our correspondence back and forth. I would assume that the phrase ”propositions as types” was coined by Martin-Lof; at least, during our first conversation at the Buffalo 1968 meeting, he suggested that one could think of a type as a proposition, according to the idea that, in intu-itionistic mathematics, the meaning of a proposition ф is given by the species of “all” proofs of ф. I use quotes here because we are not talking about a set-theoretic, completed infinity.
-
-“The second [part] introduces the correspondence between predicate logic and dependent types.” I was not thinking about it in that way at all. I wanted to provided an interpretation of the notion of construction to some nontrivial part of intuitionistic mathematics (Heyting arithmetic). Part I of the paper was just the preliminaries for this. Actually, what you say in the pdf is consistent with this. No need for change here.
-
-“Did you consider the first half to be new material or merely a reprise of what was known?” New. But in January of last year I had occasion to take a really hard look at the material in Curry-Feys, pp. 313-314; and I now see that there is amuch closer relationship between my Theorem 2 in Part I and their Theorem 5, page 326, than I had thought. The issues here are quite interesting. I can provide a discussion if you want.
-
-In the introduction to my little paper, I mention that Tait had influenced me. Let me say a few words about that. In the summer of 1963 we had conversations in which he explained to me that he had developed a theory of infinite terms in analogy to Schtte’s theory of infinite proofs, where normalization (via lambda reductions) of an infinite terms corresponds to cut elimination of the corresponding proof. He did not know what to make of it. He thought of his theory of infinite terms as a sort of pun on Schtte’s theory of infinite proofs. But we both agreed that there must be a deep connection between normalization of lambda terms and Gentzen’s cut elimination. We puzzled over this during two or three of our conversations but could not come up with an answer.
-
-As explained in the first paragraph of this e-mail, my work originated with a problem posed by Kreisel; so, at the start of this work, certainly I was not thinking of those conversations with Tait. But, as mentioned above, as soon as I got the basic insight about the relevance of Curry’s combinators, I considered how it would work for lambda terms. At that point, I remembered my conversations with Tait. In other words, when I verified that
-
-(5)     cut elimination for a derivation corresponds to normalization for the term, the conversations with Tait were very much on my mind. Most likely I would have noticed (5) without having had the conversations with Tait. But who knows? In any case, he deserves credit for having noticed the correspondence between derivations and terms. What he did not have was the associated correspondence between propositions and types. In fact, he was not using a general enough notion of type for this. By hindsight we can see that in his system there is a homomorphism, not an isomorphism, from propositions to types.
-
-I need to say a bit more about Tait and types. Since Schutte had extended his system of proofs to transfinite orders, Tait extended his system of terms to transfinite type levels. I already had my own system of primitive recursive functionals of transfinite type. In our very first conversation, we compared out ideas on this topic. This topic requires that one think very hard about the notion of type. Certainly, I had already thought extensively about the notion of type (because of (2), above) before I ever met Tait, but my conversations with him reinforced this tendency. Thoughts about types were very much on my mind when I began to consider (1), (2), above.
-
-As already mentioned, the notes were handwritten and xeroxed; no mimeographs. “Why [were they] not published until the Curry Festschrift in 1980?” First let me mention why they got published in the Curry Festschrift. Selden was bringing out the Festschrift for Curry’s 80th birthday. He asked me to contribute the notes. I said: “Sure. I’ll write up an improved version. I can now do much better.” He replied: “No, I want the original notes. It is a historical document.” In other words, by that time various copies had been passed around and there were a number of references to them in the literature. So I had them typed up and I sent them in.
-
-Why didn’t I publish them before that? Simply because they did not solve the original problem. That was Kreisel’s and Godels verdict (Kreisel had shown or described the work to Godel). In fact, even before communicating the work to Kreisel, I knew that I had gotten only an approximation to the notion of construction, and that more work had to be done. Essentially, the criticism is as follows. In my little paper, I do not provide axioms and rules of inference for proving statements of the form
-
-(3) F is a construction of ф. Remember, we have to avoid ”Zenos paradox of logic”! The answer is that the proofs will look like what you have in Figure 6. In other words, Figure 6 is not only a program; it is also a proof (or: it can be reinterpreted as a proof). But Figure 6 can also be interpreted as an explanation of how a construction (blue) is to be built up in order to have a given type (red). In other words, figures such as Figure 6 implements the idea (4) mentioned near the beginning of this e-mail; i.e., F is assigned the type ф according to the way F is built up.
-
-I hope this tickles you; it certainly tickles me. Of course, the rules of inference are as in Figure 5. So these simple ideas provide the missing theory of constructions; or, at the very least, provide a significant step in that direction.
-
-In January 2013, I exchanged a few e-mails with Tait and Constable on the history of p-a-t. This caused me to take a really careful look at the Curry-Feys book. Here is something I found that really made me laugh: the required theory, whose inferences are of the form given in Figure 5 is already in Curry-Feys. Admittedly, to see this you first have to erase all the turnstyles ( ' ); Curry seems to have some kind of obsession with them. In particular, erase the turnstiles from the proof tree on page 281. The result is exactly a proof tree of the general form given in your Figure 6. (Hint: (• • -)X is to be read “X has type (• • •)”. In other words, rewrite (• • ^)X as X : (• • •).) What does Fbc mean, where F is boldface? Just rewrite Fbc as b ^ c. You see? I am an expert. I could probably make money writing a translation manual. In summary, the required theory is essentially just Curry’s theory of functionality (more precisely, the appropriate variant of Curry’s theory). So, did I miss the boat here? Might I have seen all this in 1969 if only I had had the determination to take a hard look at Curry-Feys? I don’t know. It may require the clarity of mind represented by the notation of Figure 5. Do you have any idea when and where this notation came into use?
-
-One more remark concerning my reason for not publishing. Didn’t I feel that I had made an important breakthrough, in spite of Kreisel’s and Godels criticisms? On the one hand, yes. On the other hand, I had reservations. Except for Martin-Lof, Prawitz, Tait and Girard, very few people showed an interest in the ideas. But maybe Martin-Lof, Prawitz, Tait and Girard should have been enough. You say: “Certainly Howard was proud of the connection he drew, citing it as one of the two great achievements of his career [43].” Should we let that passage stand? Sure. The interview occurred in the spring of 2000. By that time, I was getting lots of praise from the computer science community. So, pride is a peculiar thing. Let me end this on a positive note. In 1969 Prawitz was in the US and came to UIC to give a talk. When he entered the room, he made a beeline for me, looked me in the eye and shook my hand. The message was: Well done! THAT made me proud.
-
-There is more to say; but this answers your questions, I think; so I’ll send it to avoid further delay.
-
-Your pdf, Propositions as Types, is very readable.
-
-Bill
+Вот мой первоначальный запрос.
 
 ---
 
-A later message provided additional detail on the relation to Curry and Feys [14].
+Тема: Понятие конструкции «формулы как типы».
 
 ---
 
-Curry observed the striking fact that
+Дорогой профессор Ховард,
 
-(1)     if the basic combinators are typed, then the types they receive have the same structure as various axioms of pure implicative logic, P.
+На мое исследование большое влияние оказали ваши собственные, особенно статья, цитируемая по моей теме. Сейчас я пишу статью о сфере деятельности, которая выросла из этой статьи, которую запросил для публикации отдел коммуникаций ACM (флагман профессиональной организации ученых-компьютерщиков). Проект документа прилагается.
 
-As an easy consequence of this, one gets a correspondence between the theorems of P and the types of all combinators that are built up from the basic combinators. To avoid circumlocutions, let us state this in terms of the system of simple typed combinators: there is a correspondence between the theorems of P and the types of the typed combinators. The correspondence just mentioned is better expressed by observing that there is a
+Мне хотелось бы точно изобразить историю этого предмета. Я прочитал ваше интервью с Шелл-Галлашем, но осталось несколько вопросов, на которые, надеюсь, вы любезно ответите.
 
-(2)     correspondence between the derivations in P and the types of the typed combinators.
+Ваш лист разрывается на две половины. Первый описывает соответствие между логикой высказываний и простыми типами, второй вводит соответствие между логикой предикатов и зависимыми типами. Считали ли вы первую половину новым материалом или просто повторением того, что было известно? В какой степени, по вашему мнению, ваша работа опирается на работы Хейтинга и Колмогорова или была предвосхищена ими, а также реализуемостью Клини? В какой степени ваша работа повлияла на последующее творчество де Брейна и Мартина Лофа? Какова была история вашего мимеографа по этому вопросу и почему он не был опубликован до Curry Festschrift в 1980 году?
 
-In Curry’s approach, a combinator is not given with a type; rather, a combinator receives a type by means of the “basic theory of functionality”, Func. Hence he gives an equivalent
+Большое спасибо за ваше внимание, не говоря уже о том, что вы основали мою область! Ваш, —П
 
-(3)     correspondence between the theorems ofP and the theorems of Func (plus axioms provided by (1)).
-
-This is given in Curry-Feys, pp. 313-314. A variant of this, which gives a correspondence between Gentzen-style derivations and the “basic theory of functionality” adapted to lambda terms, is then developed (pp. 315-332).
-
-Consider Gentzen’s intuitionistic sequent calculus `LJ` restricted to implication. Thus the rules characterizing `LJ` are: modus ponens, left-implication-introduction and cut. The cut elimination theorem for this system says:
-
-(4)     From a derivation of a sequent in `LJ`, we can get a derivation of the same sequent in the system `LJ*, where LJ*` is `LJ` without the cut rule.
-
-In the Curry-Feys approach to terms and their types, it is not hard to provide a statement equivalent to (4), so it is a bit surprising that they do not do so—at least, not in a form that one would expect. The closest they come to this is in the statement of Theorem 5, page 326. Moreover, Theorem 5 has a five page proof which is not easy to follow, whereas, from the viewpoint of typed lambda terms, (4) is pretty obvious. Namely, if the given derivation in (4) corresponds to a term A, then the normal form of A provides the required cut free derivation. In other words, the result (4) follows easily from the normalization of A.
-
-So we have, here, a bit of a mystery. It appears to me that the proof of Theorem 5 is mainly devoted to a proof that
-
-(5)    a typed lambda term can be normalized.
-
-If I am right about this, then the explanation of the mystery would be that (5) was not widely known at the time that Curry-Feys was written (publication date: 1958).
+И вот его ответ:
 
 ---
 
-Later, Howard elaborated on his last point above.
+Дорогой профессор Вадлер,
 
 ---
 
-Concerning the question of whether (5) was widely known at the time that Curry-Feys was written, the answer is, to my surprise: apparently not. I just remembered that Robin Gandy, whom I knew quite well, had published, in the Curry Festschrift, an article about Turing’s proof of (5). (Actually, he explained the proof to me in 1978.) Gandy says on p. 454:
+Как упоминалось в интервью Шелл-Геллашу, моя работа над предложениями как типами (pat) возникла из моей переписки с Крейзелем, который был очень заинтересован в получении математического понятия (т. е. в обычной математике) для идеи Брауэра о конструкции (как объяснил Хейтинг). Я не был знаком с работами Брауэра или Гейтинга, не говоря уже о Колмогорове, но из того, что говорил Крейзель, идея была достаточно ясна: конструкция а ^ в должна была быть конструкцией F, которая, действуя на конструкцию А a, дает конструкцию B of в. Итак, у нас есть конструкции, действующие на конструкции, подобно функционалам, действующим на функционалы. Итак, в качестве приближения
 
-“The earliest published proof [of (5)] known to me is in Curry &amp; Fey’s book Combinatory Logic . . . ”
+(1) давайте понимать «конструкцию» как «функциональную».
 
-Gandy tells us that (5) is stated as a corollary of Theorem 9, page 340. Theorem 9 is a monster. Maybe somebody will explain to me, sometime, what it says. Fortunately the relevant corollary, which is on p. 341, clearly says (5). In my struggles with Curry-Feys, I never got to p. 341.
+Но что это за функционал? В конструктивной математике функционал не задается набором упорядоченных пар. Скорее,
 
-Thanks Robin. Good show!
+(2) дать функционал — значит указать не только действие или процесс, который он выполняет, но и указать его тип (домен и контрдомен).
 
-Turing’s proof is the one that just about anyone would think of (execute redexes in a strategic order: “rightmost”-“innermost”-lambda operators of highest type first). In contrast, Curry-Fey’s proof, in the proof of Theorem 5, follows the style of Tait’s computability method (“Intensional interpretations . . . ”) or a variant thereof. At least, that is my impression. Someone should check this.
+Очевидно, что структура типов будет сложной. Я поставил перед собой задачу найти подходящие обозначения для типовых символов. Поэтому для функционала F, указанного выше, нужен подходящий символ типа. Ну, просто примите это за саму альфу (в этот момент я думал о пропозициональной логике). Внезапно я вспомнил кое-что, о чем Карри говорил на семинаре по логике во время моего пребывания в Пенсильванском университете. Если мы рассмотрим типизированные комбинаторы и посмотрим на структуру символов типа базовых комбинаторов (например, S, K, I), то увидим, что каждый из символов типа соответствует (изоморфен) одной из аксиом чистых комбинаторов. импликативная логика. Хорошо! Это было именно то, что мне нужно!
 
-## References
+Как сформулировать следующее понятие?
 
-1. S. Abramsky. Computational interpretations of linear logic. Theoretical Computer Science, 111(1&amp;2):3-57, 1993.
-2. J. Baez and M. Stay. Physics, topology, logic and computation: a rosetta stone. In B. Coecke, editor, New Structures for Physics, Lecture Notes in Physics, pages 91-166. Springer-Verlag, 2009.
-3. J. L. Bates and R. L. Constable. Proofs as programs. Transactions on Programming Languages and Systems, 7(1):113-136, Jan. 1985.
-4. P. N. Benton, G. M. Bierman, and V. de Paiva. Computational types from a logical perspective. Journal of Functional Programming, 8(2):177-193, 1998.
-5. L. Caires and F. Pfenning. Session types as intuitionistic linear propositions. In CONCUR, pages 222-236, 2010.
-6. L. Carroll. What the Tortoise said to Achilles. Mind, 4(14):278-280, April 1895.
-7. A. Church. A set of postulates for the foundation of logic. Annals of Mathematics, 33(2):346-366, 1932.
-8. A. Church. A note on the entscheidungsproblem. Journal of Symbolic Logic, 1:40-41, 1936. Received 15 April 1936. Correction, ibid., 1:101-102 (1936), received 13 August 1936.
-9. A. Church. An unsolvable problem of elementary number theory. American Journal of Mathematics, 58(2):345-363, April 1936. Presented to the American Mathematical Society, 19 April 1935; abstract in Bulletin of the American Mathematical Society, 41, May 1935.
-10. A. Church. A formulation of the simple theory of types. Journal of Symbolic Logic, 5(2):56-68, June 1940.
-11. T. Coquand and G. P. Huet. The calculus of constructions. Information and Computation, 76(2/3):95-120, 1988.
-12. P.-L. Curien and H. Herbelin. The duality of computation. In International Conference on Functional Programming (ICFP), pages 233-243, 2000.
-13. H. B. Curry. Functionality in combinatory logic. Proceedings of the National Academy of Science, 20:584-590, 1934.
-14. H. B. Curry and R. Feys. Combinatory Logic. North-Holland, 1958.
-15. R. Davies. A temporal-logic approach to binding-time analysis. In Logic in Computer Science (LICS), pages 184-195, 1996.
-16. R. Davies and F. Pfenning. A modal analysis of staged computation. In Principles of Programming Languages (POPL), pages 258-270, 1996.
-17. N. G. de Bruijn. The mathematical language Automath, its usage, and some of its extensions. In Symposium on Automatic Demonstration, volume 125 of Lecture Notes in Computer Science, pages 29-61. Springer-Verlag, 1968.
-18. R. Gandy. The confluence of ideas in 1936. In R. Herken, editor, The Universal Turing Machine: a Half-Century Survey, pages 51-102. Springer, 1995.
-19. S. Gay. Quantum programming languages: survey and bibliography. Mathematical Structures in Computer Science, 16(4):581-600, 2006.
-20. G. Gentzen. Untersuchungen uber das logische SchlieBen. Mathe-matische Zeitschrift, 39(2-3):176-210, 405-431, 1935. Reprinted in [58].
-21. J.-Y. Girard. Interpretation functionelle et elimination des coupures dans l’arithmetique d’ordre superieure, 1972. Universite Paris VII, These D’Etat.
-22. J.-Y. Girard. Linear logic. Theoretical Computer Science, 50:1-102, 1987.
-23. J.-Y. Girard, P. Taylor, and Y. Lafont. Proof and Types. Cambridge University Press, 1989.
-24. K. Godel. Uber formal unterscheidbare Satze der Principia Mathematica und verwandter Systeme I. Monatshefte fur Mathematik und Physik, 38:173-198, 1931. Reprinted in [61].
-25. G. Gonthier. Formal proof-the four-color theorem. Notices of the AMS, 55(11):1382-1393, 2008.
-26. T. Griffin. A formulae-as-types notion of control. In Principles of Programming Languages (POPL), pages 47-58. ACM, Jan. 1990.
-27. M. Hayden and R. van Renesse. Optimizing layered communication protocols. In Proceedings of the 6th International Symposium on High Performance Distributed Computing, HPDC, pages 169-177. IEEE Computer Society, 1997.
-28. D. E. Hesseling. Gnomes in the fog: the reception of Brouwer’s intuitionism in the 1920s. Birkhauser, 2003.
-29. A. Heyting. Mathematische Grundlagenforschung Intuitionismus Bewiestheorie. Ergebnisse der Mathematik und ihren Grenagebiete. Springer Verlag, Berlin, 1934.
-30. R. Hindley. The principal type scheme of an object in combinatory logic. Transactions of the American Mathematical Society, 146:2960, Dec. 1969.
-31. K. Honda. Types for dyadic interaction. In CONCUR, pages 509-523, 1993.
-32. W. A. Howard. The formulae-as-types notion of construction. In To H. B. Curry: Essays on Combinatory Logic, Lambda Calculus, and Formalism, pages 479-491. Academic Press, 1980. The original version was circulated privately in 1969.
-33. A. Jeffrey. Causality for free!: parametricity implies causality for functional reactive programs. In Programming Languages meets Program Verification (PLPV), pages 57-68, 2013.
-34. S. Kleene. Origins of recursive function theory. Annals of the History of Computing, 3(1):52-67, 1981.
-35. S. C. Kleene. General recursive functions of natural numbers. Mathematical Annalen, 112(1), December 1936. Abstract published in Bulletin of the AMS, July 1935.
-36. S. C. Kleene. А-definability and recursiveness. Duke Mathematical Journal, 2:340-353, 1936.
-37. S. C. Kleene. On the interpretation of intuitionistic number theory. Journal of Symbolic Logic, 10:109-124, 1945.
-38. S. C. Kleene and J. B. Rosser. The inconsistency of certain formal logics. Annals of Mathematics, 36:630-636, 1936.
-39. A. N. Kolmogorov. Zur deutung der intuitionistischen logik. Mathematische Zeitschrift, 35:58-65, 1932.
-40. C. Kreitz. Building reliable, high-performance networks with the nuprl proof development system. Journal of Functional Programming, 14(1):21-68, 2004.
-41. X. Leroy. Formal verification of a realistic compiler. Commun. ACM, 52(7):107-115, 2009.
-42. C. Lewis and C. Langford. Symbolic Logic. 1938. reprinted by Dover, 1959.
-43. P. Martin-Lof. Intuitionistic type theory. Bibliopolis Naples, Italy, 1984.
-44. P. Martin-Lof. On the meaning of the logical constants and the justification of the logical laws (Siena Lectures 1983). Nordic Journal of Philosophical Logic, 1(1):11-60, 1996.
-45. R. Milner. A theory of type polymorphism in programming. J. Comput. Syst. Sci., 17(3):348-375, 1978.
-46. J. C. Mitchell and G. D. Plotkin. Abstract types have existential type. Transactions on Programming Languages and Systems, 10(3):470-502, July 1988.
-47. E. Moggi. Notions of computation and monads. Information and Computation, 93(1):55-92, 1991.
-48. T. Murphy VII, K. Crary, R. Harper, and F. Pfenning. A symmetric modal lambda calculus for distributed computing. In Logic in Computer Science (LICS), pages 286-295, 2004.
-49. C. Murthy. An evaluation semantics for classical proofs. In Logic in Computer Science (LICS), pages 96-107, 1991.
-50. M. Parigot. Ар-calculus: an algorithmic interpretation of classical natural deduction. In Logic programming and automated reasoning, volume 624 of Lecture Notes in Computer Science, pages 190-201. Springer-Verlag, 1992.
-51. A. Pnueli. The temporal logic of programs. In FOCS, pages 46-57, 1977.
-52. A. Prior. Time and Modality. 1957.
-53. J. C. Reynolds. Towards a theory of type structure. In Symposium on Programming, volume 19 of Lecture Notes in Computer Science, pages 408-423, 1974.
-54. D. Scott. Relating theories of the А-calculus. In To H. B. Curry: Essays on Combinatory Logic, Lambda Calculus, and Formalism, pages 375-402. Academic Press, 1980.
-55. A. E. Shell-Gellasch. Reflections of my advisor: Stories of mathematics and mathematicians. The Mathematical Intelligencer, 25(1):35-41, 2003.
-56. M. H. S0rensen and P. Urzyczyn. Lectures on the Curry-Howard isomorphism. Elsevier, 2006.
-57. N. Swamy, J. Chen, C. Fournet, P. Strub, K. Bhargavan, and J. Yang. Secure distributed programming with value-dependent types. In M. M. T. Chakravarty, Z. Hu, and O. Danvy, editors, International Conference on Functional Programming (ICFP), pages 266-278. ACM, 2011.
-58. M. E. Szabo, editor. The collected papers of Gerhard Gentzen. North Holland, 1969.
-59. S. Thompson. Type Theory and Functional Programming. Addison-Wesley, 1991.
-60. A. M. Turing. On computable numbers, with an application to the Entscheidungsproblem. Proceedings of the London Mathematical Society, s2-42(1), 1937. Received 28 May 1936, read 12 November 1936.
-61. J. van Heijenoort. From Frege to Godel: a sourcebook in mathematical logic, 1879-1931. Harvard University Press, 1967.
-62. M. Y. Vardi. From church and prior to PSL. In O. Grumberg and H. Veith, editors, 25 Years of Model Checking—History, Achievements, Perspectives, volume 5000 of Lecture Notes in Computer Science, pages 150-171. Springer, 2008.
-63. P. Wadler. A taste of linear logic. In Mathematical Foundations of Computer Science (MFCS), volume 711 of LNCS, pages 185-210. Springer-Verlag, 1993.
-64. P. Wadler. Call-by-value is dual to call-by-name. In International Conference on Functional Programming (ICFP), pages 189-201. ACM, 2003.
-65. P. Wadler. Propositions as sessions. In International Conference on Functional Programming (ICFP), pages 273-286. ACM, 2012.
-66. A. N. Whitehead and B. Russell. Principia mathematica. Cambridge University Press, 1912.
+(3) `F` является конструкцией phi.
+
+Рассмотрим случай, когда `φ` имеет вид `α ⊃ β` Соблазн состоит в том, чтобы определить, что « `F` — конструкция из `α ⊃ β` означает «для всех `A` : если `A` — конструкция из `α` , то `FA` — конструкция из `β` ». Что ж, это замкнутый круг, потому что мы использовали «если… то…» для определения импликации. Это то, что вы называете «логическим парадоксом Зеноса». Я избежал этой цикличности, приняв (3) за следующее:
+
+(4) `F` присваивается тип `ф` в зависимости от способа построения `F` ; т. е. способ построения `F`
+
+Таким образом, `F` является конструкцией `ф` по построению. Ваш рисунок 6 иллюстрирует именно то, что я имел в виду. (В то время у меня не было этой красивой записи, но она передает то, что я имел в виду.)
+
+Подводя итог: мое основное понимание состояло одновременно из мыслей (2) и (4) плюс мысли, что наблюдение Карри предоставило средства для реализации (2), (4). Позвольте мне сказать это по-другому. Мысль (2) не была новой. Мысль (2) посещала меня уже много лет, с тех пор, как я начал изучать примитивно-рекурсивные функционалы конечного типа. Новым была мысль (4) плюс признание того, что идея Карри обеспечила путь к реализации (4). Это основное понимание я получил летом 1966 года. Как только я увидел, как это сделать с помощью комбинаторов, я задался вопросом, как это будет выглядеть с точки зрения лямбда-исчисления, и, к своему удовольствию, увидел, что это соответствует интуиционистской версии. секвенциального исчисления Генцена.
+
+Кстати, наблюдение Карри относительно типов основных комбинаторов изложено в его книге «Фейс» (Curry-Feys), но я не знал об этом, хотя экземпляр у меня был уже несколько лет (с 1959 года, когда меня наняли в Пенсильванский университет). Состояние). Проработав детали Пэта в течение нескольких месяцев, я начал подумывать о том, чтобы написать его, поэтому решил, что мне лучше посмотреть, есть ли он в книге. Ну, найти его достаточно легко, если знать, что ищешь. Глядя на это, я был шокирован: они не только распространили идеи на секвенциальное исчисление Генцена, но и установили связь между устранением сокращений из вывода и нормализацией соответствующего лямбда-члена. Но, присмотревшись, я пришел к выводу, что у них есть связь, но нет связи. Оказывается, и здесь я был не совсем прав. См. мое замечание об их теореме 5 ниже. Не то чтобы это имело большое значение для чего-либо, что я мог бы опубликовать: даже если бы они имели связь между секвенциальным исчислением Генцена и лямбда-исчислением, у меня было далеко идущее обобщение (т. е. на арифметику Гейтинга).
+
+Вышеизложенное более подробно, чем требуется для ответа на ваши вопросы, но мне нужно было написать это, чтобы прояснить свои мысли по этому поводу; так что я могу также включить вышеизложенное, поскольку думаю, что это вас заинтересует. Он отвечает на один из ваших вопросов: «В какой степени, по вашему мнению, ваша работа опирается или была предвосхищена работами Хейтинга и Колмогорова, а также реализуемостью Клини?» А именно, моя работа основана на работах Хейтинга и Брауэра, благодаря объяснению мне этой работы Крейзелем. Ничто из этого не было предвосхищено работами Гейтинга, Колмогорова и Клини: они не думали о функционалах конечного типа. Хотя я был знаком с рекурсивной реализуемостью Клини, в то время я об этом не думал. Правда, оно затрагивает идеи о конструкциях Брауэра, но далеко не отражает понятие конструкции (правда, Клини когда-то делала замечания по этому поводу, не помню где). Из-за связи между конструкциями и рекурсивной реализуемостью Клини могло иметь место некоторое бессознательное влияние; но, в любом случае, не существенное влияние.
+
+«Повлияла ли ваша работа на последующее творчество де Брейна и Мартина Лофа?» Насколько мне известно, моя работа не оказала никакого влияния на творчество де Брейна. Его работа кажется совершенно независимой от моей. Я помню, что однажды он прислал мне пакет материалов Automath. Проект компьютерной программы для проверки существующих доказательств не показался мне очень интересным, и я не ответил. Меня бы заинтересовала программа для поиска доказательств еще не доказанных результатов! Даже помощник по доказательству был бы в порядке. Почему он прислал мне материалы Automath? Я не помню, какой это был год. Где-то в 1970-е гг. Каким бы ни было сопроводительное письмо, оно не было информативным; просто что-то вроде: «Уважаемый профессор Ховард, вас может заинтересовать следующий материал…». С тех пор я просмотрел две или три его статьи и оставил у меня более благоприятное впечатление. Это хорошая, солидная работа. Очевидно, оригинально. Он самостоятельно открыл идею дериваций как терминов и сопутствующую идею формул-как-типов. Он использует лямбда-термины, но, я думаю, только в целях описания. Другими словами, я не думаю, что у него есть связь между нормализацией и устранением сокращений, но я не проводил подробного исследования его работы. В самом деле, использует ли он вообще систему Генцена? Я просто не знаю. На последние два вопроса легко ответит любой, кто знаком с его работами. В любом случае отдайте ему должное там, где это необходимо. Вкусностей хватит на всех!
+
+Мое влияние на Мартина-Лофа? Никаких проблем. Я встретил его на конференции в Буффало в 1968 году и рассказал ему свои идеи. Его мгновенной реакцией было: «Итак, почему я не подумал об этом?» У него была назначенная встреча в МСЖД на 1968-1969 учебный год, так что у нас было много возможностей поговорить, и он начал разрабатывать свой собственный подход к идеям. В январе 1969 года, главным образом для того, чтобы убедиться, что мы оба ясно понимаем, кто и что открыл, я записал свои собственные идеи в виде рукописных заметок. К тому времени ксероксы были широко распространены, поэтому я отправил копию Крайзелю, а он раздал копии разным людям, включая Жирара. По крайней мере, я думаю, что именно так Жирар получил копию, или, может быть, Мартин-Лоф дал ему ее. Мне нравятся работы Мартина-Лофа. Я мог бы сказать об этом больше, но краткий ответ на ваш вопрос таков: работа Мартина-Лофа возникла из моей. Он всегда отдавал мне должное, и мы хорошие друзья.
+
+Продолжая размышление, я должен упомянуть, что в том первом разговоре Мартин-Лоф предположил, что идея дериваций как терминов будет особенно хорошо работать в связи с теорией естественной дедукции Правица. Я подумал: ладно, но ничего страшного. Собственно, с результатами Правица я в то время еще не был знаком (или был знаком, то лишь смутно). Но это было более серьезное дело, чем я думал, потому что шаги Правица по уменьшению вывода прямо соответствуют шагам сокращения для соответствующего лямбда-члена! На самом деле, для большинства целей мне нравится последовательная формулировка естественной дедукции, приведенная на стр. 33 и 88 работы Соренсена и Уржичина (2006). На самом деле, если к этому добавить левое импликацию-введение (ограничимся чистой импликативной логикой), то получится довольно интересная система P#. Все случаи modus ponens могут быть исключены, а не только те, которым предшествует введение левой импликации. Именно этим я и занимаюсь в своей статье JSL 1980 года «Порядковый анализ термов конечного типа». Кроме того, правило отсечения легко вывести в P# (просто учтите, что для типизированных лямбда-терминов: правильно сформированный термин, замененный на правильно сформированный термин, приводит к правильному формированию термина); следовательно, P# является консервативным расширением системы P* из первой части моей небольшой статьи в Curry Festschrift.
+
+Фраза «формулы как типы» была придумана Крейзелем для того, чтобы у нас было название предмета в нашей переписке. Я бы предположил, что фраза «предложения как типы» была придумана Мартином-Лофом; по крайней мере, во время нашей первой беседы на встрече в Буффало в 1968 году он предположил, что можно думать о типе как о предложении, согласно идее, что в интуиционистской математике значение предложения ф задается видами «все» доказательства ф. Я использую здесь кавычки, потому что мы не говорим о теоретико-множественной завершенной бесконечности.
+
+«Вторая [часть] знакомит с соответствием между логикой предикатов и зависимыми типами». Я вообще не думал об этом в таком ключе. Я хотел дать интерпретацию понятия построения некоторой нетривиальной части интуиционистской математики (арифметики Гейтинга). Часть I статьи была лишь предварительными сведениями к этому. Собственно, то, что вы говорите в pdf, соответствует этому. Здесь не нужны перемены.
+
+«Считаете ли вы первую половину новым материалом или просто повторением того, что было известно?» Новый. Но в январе прошлого года у меня была возможность по-настоящему внимательно просмотреть материал в Curry-Feys, стр. 313-314; и теперь я вижу, что между моей теоремой 2 в части I и их теоремой 5, стр. 326, существует гораздо более тесная связь, чем я думал. Проблемы здесь довольно интересные. Если хотите, могу провести обсуждение.
+
+Во введении к моей небольшой статье я упоминаю, что Тейт оказал на меня влияние. Позвольте мне сказать несколько слов об этом. Летом 1963 года у нас были беседы, в которых он объяснил мне, что разработал теорию бесконечных термов по аналогии с теорией бесконечных доказательств Штте, где нормализация (через лямбда-редукции) бесконечных термов соответствует сокращению исключения соответствующих доказательство. Он не знал, что с этим делать. Он считал свою теорию бесконечных членов своего рода каламбуром теории бесконечных доказательств Штте. Но мы оба согласились, что должна существовать глубокая связь между нормализацией лямбда-членов и устранением сокращения Генцена. Мы ломали голову над этим в течение двух-трех наших разговоров, но так и не смогли найти ответа.
+
+Как объяснялось в первом абзаце этого письма, моя работа возникла из-за проблемы, поставленной Крейзелем; Итак, в начале этой работы я, конечно, не думал об этих разговорах с Тейтом. Но, как упоминалось выше, как только я получил общее представление об актуальности комбинаторов Карри, я задумался, как они будут работать с лямбда-термами. В этот момент я вспомнил свои разговоры с Тейтом. Другими словами, когда я убедился в том, что
+
+(5) исключение сокращения при выводе соответствует нормализации термина, разговоры с Тейтом были очень важны для меня. Скорее всего, я бы заметил (5), не разговаривая с Тейтом. Но кто знает? В любом случае ему следует отдать должное за то, что он заметил соответствие между выводами и терминами. Чего у него не было, так это ассоциированного соответствия между предложениями и типами. На самом деле он не использовал для этого достаточно общего понятия типа. Оглядываясь назад, мы видим, что в его системе существует гомоморфизм, а не изоморфизм предложений к типам.
+
+Мне нужно сказать немного больше о Тейте и типах. Поскольку Шютте распространил свою систему доказательств на трансфинитные порядки, Тейт распространил свою систему термов на уровни трансфинитных типов. У меня уже была своя система примитивно-рекурсивных функционалов трансфинитного типа. В нашей самой первой беседе мы сравнивали идеи на эту тему. Эта тема требует серьезного размышления над понятием типа. Конечно, я уже много думал о понятии типа (из-за (2) выше) еще до того, как встретил Тейта, но мои разговоры с ним усилили эту тенденцию. Мысли о типах очень сильно посещали меня, когда я начал рассматривать (1), (2) выше.
+
+Как уже говорилось, записи были написаны от руки и отксерокопированы; никаких мимеографов. «Почему [они] не были опубликованы до Curry Festschrift в 1980 году?» Прежде всего позвольте мне упомянуть, почему они были опубликованы в Curry Festschrift. Селден выпускал Фестиваль к 80-летию Карри. Он попросил меня внести записи. Я сказал: «Конечно. Напишу улучшенную версию. Теперь я могу добиться большего». Он ответил: «Нет, мне нужны оригинальные записи. Это исторический документ». Иными словами, к тому времени были распространены различные экземпляры и в литературе имелось множество упоминаний о них. Поэтому я напечатал их и отправил.
+
+Почему я не опубликовал их раньше? Просто потому, что они не решили исходную проблему. Таков был вердикт Крейзеля и Гёделя (Крейзель показал или описал работу Гёделю). Фактически, еще до того, как сообщить о работе Крайзелю, я знал, что получил лишь приблизительное представление о конструкции и что нужно проделать еще больше работы. Суть критики заключается в следующем. В своей небольшой статье я не привожу аксиом и правил вывода для доказательства утверждений вида
+
+(3) F является конструкцией ф. Помните, нам следует избегать «логического парадокса Зеноса»! Ответ в том, что доказательства будут выглядеть так, как показано на рисунке 6. Другими словами, рисунок 6 — это не просто программа; это также доказательство (или: оно может быть истолковано как доказательство). Но рисунок 6 также можно интерпретировать как объяснение того, как должна быть построена конструкция (синяя), чтобы иметь заданный тип (красный). Другими словами, такие рисунки, как рисунок 6, реализуют идею (4), упомянутую в начале этого электронного письма; т. е. F присваивается тип ф в соответствии со способом построения F.
+
+Надеюсь, это вас пощекочет; меня это, конечно, щекочет. Конечно, правила вывода такие же, как на рисунке 5. Таким образом, эти простые идеи обеспечивают недостающую теорию конструкций; или, по крайней мере, обеспечить значительный шаг в этом направлении.
+
+В январе 2013 года я обменялся несколькими электронными письмами с Тейтом и Констеблем об истории Пэт. Это заставило меня очень внимательно взглянуть на книгу Карри-Фейса. Вот что я обнаружил, что действительно рассмешило меня: требуемая теория, выводы которой имеют форму, показанную на рис. 5, уже находится в Карри-Фейсе. Правда, чтобы увидеть это, сначала нужно стереть все повороты ( ' ); Кажется, Карри ими одержим. В частности, сотрите турникеты из дерева доказательств на стр. 281. В результате получится именно дерево доказательств общего вида, представленного на рисунке 6. (Подсказка: (• • -)X следует читать «X имеет тип (•) • •)”. Другими словами, перепишите (• • ^)X как X : (• • •).) Что означает Fbc, где F выделено жирным шрифтом? Просто перепишите Fbc как b ^ c. Понимаете? Я эксперт. Вероятно, я мог бы заработать деньги, написав руководство по переводу. Таким образом, требуемая теория — это, по сути, просто теория функциональности Карри (точнее, соответствующий вариант теории Карри). Итак, я пропустил лодку? Мог бы я увидеть все это в 1969 году, если бы у меня была решимость внимательно взглянуть на Карри-Фейса? Я не знаю. Это может потребовать ясности ума, представленной обозначениями на рисунке 5. Есть ли у вас какие-либо идеи, когда и где эти обозначения вошли в употребление?
+
+Еще одно замечание по поводу моей причины не публиковаться. Разве я не чувствовал, что совершил важный прорыв, несмотря на критику Крейзеля и Гёделя? С одной стороны, да. С другой стороны, у меня были сомнения. За исключением Мартина-Лофа, Правица, Тэйта и Жирара, мало кто проявил интерес к этим идеям. Но, возможно, Мартина-Лофа, Правица, Тэйта и Жирара должно было быть достаточно. Вы говорите: «Конечно, Говард гордился той связью, которую он установил, называя ее одним из двух величайших достижений своей карьеры [43]». Должны ли мы оставить этот отрывок в силе? Конечно. Интервью состоялось весной 2000 года. К тому времени я уже получил много похвал от сообщества информатиков. Итак, гордость – вещь особенная. Позвольте мне закончить это на позитивной ноте. В 1969 году Правиц был в США и приехал в МСЖД, чтобы выступить с докладом. Когда он вошел в комнату, он направился ко мне, посмотрел мне в глаза и пожал мне руку. Сообщение было: Молодцы! ЭТО заставило меня гордиться.
+
+Есть еще что сказать; но я думаю, это отвечает на ваши вопросы; поэтому я отправлю его, чтобы избежать дальнейших задержек.
+
+Ваш PDF-файл «Предложения как типы» очень удобен для чтения.
+
+Счет
+
+---
+
+В более позднем сообщении содержались дополнительные подробности об отношениях с Карри и Фейсом [14].
+
+---
+
+Карри заметил поразительный факт:
+
+(1) если базовые комбинаторы типизированы, то типы, которые они получают, имеют ту же структуру, что и различные аксиомы чистой импликативной логики П.
+
+Как легкое следствие этого, получается соответствие между теоремами Р и типами всех комбинаторов, построенных из базовых комбинаторов. Чтобы избежать многословий, сформулируем это на языке системы простых типизированных комбинаторов: существует соответствие между теоремами P и типами типизированных комбинаторов. Только что упомянутое соответствие лучше выразить, если заметить, что существует
+
+2) соответствие дифференцирований в P типам типизированных комбинаторов.
+
+В подходе Карри комбинатору не задается тип; скорее, комбинатор получает тип посредством «базовой теории функциональности», Func. Следовательно, он дает эквивалент
+
+(3) соответствие между теоремами P и теоремами Func (плюс аксиомы, предусмотренные (1)).
+
+Это дано у Карри-Фейса, стр. 313-314. Затем развивается ее вариант, который дает соответствие между выводами в стиле Генцена и «базовой теорией функциональности», адаптированной к лямбда-термам (стр. 315-332).
+
+Рассмотрим интуиционистское секвенциальное исчисление Генцена `LJ` ограниченное импликацией. Таким образом, правилами, характеризующими `LJ` являются: modus ponens, левое импликация-введение и сокращение. Теорема об исключении разреза для этой системы гласит:
+
+(4) Из вывода секвенции в `LJ` можно получить вывод той же секвенции в системе `LJ*, where LJ*` — это `LJ` без правила разреза.
+
+В подходе Карри-Фея к терминам и их типам нетрудно предоставить утверждение, эквивалентное (4), поэтому немного удивительно, что они этого не делают — по крайней мере, не в той форме, которую можно было бы ожидать. . Ближе всего они подходят к этому в формулировке теоремы 5, стр. 326. Более того, теорема 5 имеет пятистраничное доказательство, за которым нелегко следовать, тогда как с точки зрения типизированных лямбда-термов (4) довольно очевидно. А именно, если данный вывод в (4) соответствует терму A, то нормальная форма A обеспечивает требуемый вывод без разрезов. Другими словами, результат (4) легко следует из нормировки A.
+
+Итак, здесь у нас есть небольшая загадка. Мне кажется, что доказательство теоремы 5 в основном посвящено доказательству того, что
+
+(5) типизированный лямбда-терм можно нормализовать.
+
+Если я прав на этот счет, то объяснение загадки состоит в том, что (5) не было широко известно в то время, когда был написан Карри-Фейс (дата публикации: 1958 г.).
+
+---
+
+Позже Говард подробно остановился на своем последнем пункте выше.
+
+---
+
+Что касается вопроса о том, было ли (5) широко известно в то время, когда был написан Карри-Фейс, то, к моему удивлению, ответ таков: по-видимому, нет. Я только что вспомнил, что Робин Ганди, которого я хорошо знал, опубликовал в Curry Festschrift статью о доказательстве Тьюринга (5). (На самом деле он объяснил мне доказательство в 1978 году.) Ганди говорит на стр. 454:
+
+«Самое раннее известное мне опубликованное доказательство [(5)] содержится в книге Карри и Фея «Комбинаторная логика». . . »
+
+Ганди сообщает нам, что (5) сформулировано как следствие теоремы 9, стр. 340. Теорема 9 — монстр. Может быть, кто-нибудь мне когда-нибудь объяснит, что там написано. К счастью, соответствующее следствие, которое находится на стр. 341, ясно сказано (5). В моей борьбе с Карри-Фейсом мне так и не удалось достичь p. 341.
+
+Спасибо, Робин. Хорошее шоу!
+
+Доказательство Тьюринга — это то, о котором мог бы подумать практически каждый (выполнять редексы в стратегическом порядке: сначала «самые правые» — «самые внутренние» — лямбда-операторы высшего типа). Напротив, доказательство Карри-Фея в доказательстве теоремы 5 следует стилю метода вычислимости Тейта («Интенсиональные интерпретации...») или его варианту. По крайней мере, это мое впечатление. Кто-то должен это проверить.
+
+## Рекомендации
+
+1. С. Абрамский. Вычислительные интерпретации линейной логики. Теоретическая информатика, 111(1&amp;2):3-57, 1993.
+2. Дж. Баэз и М. Стей. Физика, топология, логика и вычисления: розеттский камень. В Б. Коке, редакторе, «Новые структуры в физике», Конспекты лекций по физике, страницы 91–166. Спрингер-Верлаг, 2009.
+3. Дж. Л. Бейтс и Р. Л. Констебль. Доказательства как программы. Транзакции по языкам и системам программирования, 7 (1): 113-136, январь 1985 г.
+4. П. Н. Бентон, Г. М. Бирман и В. де Пайва. Вычислительные типы с логической точки зрения. Журнал функционального программирования, 8(2):177-193, 1998.
+5. Л. Кайрес и Ф. Пфеннинг. Типы сеансов как интуиционистские линейные предложения. В CONCUR, стр. 222–236, 2010 г.
+6. Л. Кэрролл. Что Черепаха сказала Ахиллесу. Mind, 4 (14): 278–280, апрель 1895 г.
+7. Церковь. Набор постулатов, лежащих в основе логики. Анналы математики, 33 (2): 346–366, 1932.
+8. Церковь. Замечание о проблеме entscheidungs. Журнал символической логики, 1:40–41, 1936. Поступило 15 апреля 1936 года. Исправление, там же, 1:101–102 (1936), получено 13 августа 1936 года.
+9. Церковь. Неразрешимая проблема элементарной теории чисел. Американский журнал математики, 58 (2): 345-363, апрель 1936 г. Представлено Американскому математическому обществу 19 апреля 1935 г.; аннотация в Бюллетене Американского математического общества, 41 мая 1935 г.
+10. Церковь. Формулировка простой теории типов. Журнал символической логики, 5 (2): 56–68, июнь 1940 г.
+11. Т. Коканд и Г. П. Юэ. Расчет конструкций. Информация и вычисления, 76(2/3):95-120, 1988.
+12. П.-Л. Курьен и Х. Гербелен. Двойственность вычислений. На Международной конференции по функциональному программированию (ICFP), страницы 233–243, 2000 г.
+13. ХБ Карри. Функциональность в комбинаторной логике. Труды Национальной академии наук, 20: 584-590, 1934.
+14. Х.Б. Карри и Р. Фейс. Комбинаторная логика. Северная Голландия, 1958 год.
+15. Р. Дэвис. Темпорально-логический подход к анализу времени связывания. В книге «Логика в информатике» (LICS), страницы 184–195, 1996 г.
+16. Р. Дэвис и Ф. Пфеннинг. Модальный анализ поэтапных вычислений. В «Принципах языков программирования» (POPL), страницы 258–270, 1996 г.
+17. Н.Г. де Брёйн. Математический язык Automath, его использование и некоторые расширения. На симпозиуме по автоматической демонстрации, том 125 конспектов лекций по информатике, страницы 29–61. Спрингер-Верлаг, 1968 г.
+18. Р. Ганди. Слияние идей в 1936 году. В книге Р. Херкена, редактора, «Универсальная машина Тьюринга: обзор полувека», страницы 51–102. Спрингер, 1995.
+19. С. Гей. Квантовые языки программирования: обзор и библиография. Математические структуры в информатике, 16(4):581-600, 2006.
+20. Г. Генцен. Untersuchungen uber das logische SchlieBen. Mathe-matische Zeitschrift, 39(2-3):176-210, 405-431, 1935. Перепечатано в [58].
+21. Ж.-Ю. Жирар. Функциональная интерпретация и устранение купюр в арифметике высшего порядка, 1972. Парижский университет VII, This D'Etat.
+22. Ж.-Ю. Жирар. Линейная логика. Теоретическая информатика, 50:1-102, 1987.
+23. Ж.-Ю. Жирар, П. Тейлор и Ю. Лафон. Доказательство и типы. Издательство Кембриджского университета, 1989.
+24. К. Гёдель. Uber formal unterscheidbare Satze der Principia Mathematica und verwandter Systeme I. Monatshefte Fur Mathematik und Physik, 38:173-198, 1931. Перепечатано в [61].
+25. Г. Гонтье. Формальное доказательство — теорема о четырёх красках. Уведомления AMS, 55(11):1382-1393, 2008 г.
+26. Т. Гриффин. Понятие управления «формулы как типы». В «Принципах языков программирования» (POPL), стр. 47–58. ACM, январь 1990 г.
+27. М. Хайден и Р. ван Ренесс. Оптимизация многоуровневых протоколов связи. В материалах 6-го Международного симпозиума по высокопроизводительным распределенным вычислениям, HPDC, страницы 169–177. Компьютерное общество IEEE, 1997.
+28. Д. Э. Хесселинг. Гномы в тумане: рецепция интуиционизма Брауэра в 1920-е годы. Биркхаузер, 2003.
+29. А. Хейтинг. Mathematische Grundlagenforschung Intuitionismus Bewiestheorie. Ergebnisse der Mathematik und ihren Grenagebiete. Шпрингер Верлаг, Берлин, 1934 г.
+30. Р. Хиндли. Схема основного типа объекта в комбинаторной логике. Труды Американского математического общества, 146:2960, декабрь 1969 г.
+31. К. Хонда. Типы диадического взаимодействия. В CONCUR, стр. 509–523, 1993 г.
+32. В.А. Ховард. Понятие конструкции «формулы как типы». В книге Х.Б. Карри: Очерки по комбинаторной логике, лямбда-исчислению и формализму, страницы 479–491. Academic Press, 1980. Оригинальная версия была распространена в частном порядке в 1969 году.
+33. А. Джеффри. Причинность бесплатно!: параметричность подразумевает причинность для функциональных реактивных программ. В разделе «Языки программирования встречается проверка программ» (PLPV), страницы 57–68, 2013 г.
+34. С. Клини. Истоки теории рекурсивных функций. Анналы истории вычислений, 3 (1): 52–67, 1981.
+35. СК Клини. Общерекурсивные функции натуральных чисел. Mathematical Annalen, 112 (1), декабрь 1936 г. Аннотация опубликована в Бюллетене AMS, июль 1935 г.
+36. СК Клини. А-определимость и рекурсивность. Математический журнал Дьюка, 2:340–353, 1936.
+37. СК Клини. Об интерпретации интуиционистской теории чисел. Журнал символической логики, 10:109–124, 1945.
+38. С. К. Клини и Дж. Б. Россер. Непоследовательность некоторых формальных логик. Анналы математики, 36: 630–636, 1936.
+39. А. Н. Колмогоров. Zur deutung der intuitionistischen logik. Mathematische Zeitschrift, 35:58–65, 1932.
+40. К. Крейц. Построение надежных, высокопроизводительных сетей с помощью системы разработки nuprlproof. Журнал функционального программирования, 14(1):21-68, 2004.
+41. X. Лерой. Формальная проверка реалистичного компилятора. Коммун. АКМ, 52(7):107–115, 2009.
+42. К. Льюис и К. Лэнгфорд. Символическая логика. 1938 г. переиздано Дувром, 1959 г.
+43. П. Мартин-Лоф. Интуиционистская теория типов. Библиополис Неаполь, Италия, 1984 г.
+44. П. Мартин-Лоф. О значении логических констант и обосновании логических законов (Siena Lectures, 1983). Северный журнал философской логики, 1 (1): 11-60, 1996.
+45. Р. Милнер. Теория полиморфизма типов в программировании. Дж. Компьютер. Сист. Sci., 17(3):348-375, 1978.
+46. Дж. К. Митчелл и Г. Д. Плоткин. Абстрактные типы имеют экзистенциальный тип. Транзакции по языкам и системам программирования, 10 (3): 470-502, июль 1988 г.
+47. Э. Могги. Понятия вычислений и монад. Информация и вычисления, 93(1):55-92, 1991.
+48. Т. Мерфи VII, К. Крери, Р. Харпер и Ф. Пфеннинг. Симметричное модальное лямбда-исчисление для распределенных вычислений. В книге «Логика в информатике» (LICS), страницы 286–295, 2004 г.
+49. К. Мурти. Семантика вычислений для классических доказательств. В книге «Логика в информатике» (LICS), страницы 96–107, 1991 г.
+50. М. Париго. Ар-исчисление: алгоритмическая интерпретация классической естественной дедукции. В книге «Логическое программирование и автоматическое рассуждение», том 624 конспектов лекций по информатике, страницы 190–201. Спрингер-Верлаг, 1992.
+51. А. Пнуэли. Временная логика программ. В FOCS, стр. 46–57, 1977 г.
+52. А. Прайор. Время и модальность. 1957.
+53. Джей Си Рейнольдс. К теории типовой структуры. На симпозиуме по программированию, том 19 конспектов лекций по информатике, страницы 408–423, 1974 г.
+54. Д. Скотт. Соответствующие теории А-исчисления. В книге Х.Б. Карри: Очерки по комбинаторной логике, лямбда-исчислению и формализму, страницы 375–402. Академик Пресс, 1980.
+55. А.Е. Шелл-Геллаш. Размышления моего наставника: Рассказы о математике и математиках. The Mathematical Intelligencer, 25(1):35-41, 2003.
+56. М. Х. Соренсен и П. Уржичин. Лекции по изоморфизму Карри-Говарда. Эльзевир, 2006.
+57. Н. Свами, Дж. Чен, К. Фурне, П. Струб, К. Бхаргаван и Дж. Янг. Безопасное распределенное программирование с использованием типов, зависящих от значений. В ММТ Чакраварти, З. Ху и О. Дэнви, редакторах, Международная конференция по функциональному программированию (ICFP), страницы 266–278. АКМ, 2011.
+58. М. Е. Сабо, редактор. Сборник статей Герхарда Генцена. Северная Голландия, 1969 год.
+59. С. Томпсон. Теория типов и функциональное программирование. Аддисон-Уэсли, 1991.
+60. А. М. Тьюринг. О вычислимых числах с применением к проблеме Entscheidungs. Труды Лондонского математического общества, стр. 2-42 (1), 1937 г. Поступило 28 мая 1936 г., прочитано 12 ноября 1936 г.
+61. Дж. ван Хейеноорт. От Фреге до Геделя: справочник по математической логике, 1879–1931. Издательство Гарвардского университета, 1967.
+62. МОЙ Варди. Из церкви и до PSL. В О. Грумберге и Х. Вейте, редакторах, «25 лет проверки моделей — история, достижения, перспективы», том 5000 конспектов лекций по информатике, страницы 150–171. Спрингер, 2008.
+63. П. Вадлер. Вкус линейной логики. В «Математических основах информатики» (MFCS), том 711 LNCS, страницы 185–210. Спрингер-Верлаг, 1993.
+64. П. Вадлер. Вызов по значению двойственен вызову по имени. В Международной конференции по функциональному программированию (ICFP), страницы 189–201. АКМ, 2003.
+65. П. Вадлер. Предложения как сессии. В Международной конференции по функциональному программированию (ICFP), страницы 273–286. АКМ, 2012.
+66. А. Н. Уайтхед и Б. Рассел. Принципы математики. Издательство Кембриджского университета, 1912.
