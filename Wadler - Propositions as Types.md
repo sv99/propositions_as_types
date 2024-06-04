@@ -3,9 +3,9 @@
 
 Philip Wadler
 
-University of Edinburgh wadler@inf.ed.ac.uk
+University of Edinburgh <wadler@inf.ed.ac.uk>
 
-##1.   Introduction
+## 1.   Introduction
 
 
 Powerful insights arise from linking two fields of study previously thought separate. Examples include Descartes’s coordinates, which links geometry to algebra, Planck’s Quantum Theory, which links particles to waves, and Shannon’s Information Theory, which links thermodynamics to communication. Such a synthesis is offered by the principle of Propositions as Types, which links logic to computation. At first sight it appears to be a simple coincidence — almost a pun—but it turns out to be remarkably robust, inspiring the design of automated proof assistants and programming languages, and continuing to influence the forefronts of computing.
@@ -34,7 +34,7 @@ Hence, we have not merely a shallow bijection between propositions and types, bu
 
   This paper serves as a brief introduction to Propositions as Types. For those interested to learn more, textbook treatments are available [23, 59, 56].
 
-##2. Church, and the theory of computation
+## 2. Church, and the theory of computation
 
 The origins of logic lie with Aristotle and the stoics in classical Greece, Ockham and the scholastics in the middle ages, and Leibniz’s vision of a *calculus ratiocinator* at the dawn of the enlightenment. Our interest in the subject lies with formal logic, which emerged from the contributions of Boole, De Morgan, Frege, Peirce, Peano, and others in the 19th century.
 
@@ -71,7 +71,7 @@ The origins of logic lie with Aristotle and the stoics in classical Greece, Ockh
    As well as fundamental contributions to programming languages, Church also made early contributions to hardware verification and model checking, as described by Vardi [62].
 
 
-##3.   Gentzen, and the theory of proof
+## 3.   Gentzen, and the theory of proof
 
 A second goal of Hilbert’s program was to establish the consistency of various logics. If a logic is inconsistent, then it can derive any formula, rendering it useless.
 
@@ -88,7 +88,7 @@ A second goal of Hilbert’s program was to establish the consistency of various
    It is an irony that Gentzen was required to introduce Sequent Calculus in order to prove the Subformula Property for Natural Deduction. He needed a roundabout proof to show the absence of roundabout proofs! Later, in 1965, Prawitz showed how to prove the Subformula Property directly, by introducing a way to simplify Natural Deduction proofs; and this set the ground for Howard’s work described in the next section.
 
 
-##4.   Propositions as Types
+## 4.   Propositions as Types
 
 In 1934, Curry observed a curious fact, relating a theory of functions to a theory of implication [13]. Every type of a function `(A → B)` could be read as a proposition `(A ⊃ B)`, and under this reading the type of any given function would always correspond to a provable proposition. Conversely, for every provable proposition there was a function with the corresponding type. Subsequently, Curry and Feys [14] extended the correspondence from not merely types and propositions to also include term and proofs, and to hint at the relation between evaluation of terms and simplification of proofs.
 
@@ -111,7 +111,7 @@ This reading of proofs goes back to the intuitionists, and is often called the B
    Applications include CompCert, a certified compiler for the C programming language verified in Coq [41]; a computer-checked proof of the four-colour theorem also verified in Coq [25]; parts of the Ensemble distributed system verified in NuPRL [27, 40]; and twenty thousand lines of browser plug-ins verified in F? [57].  de Bruijn’s work was independent of Howard’s, but Howard directly inspired Martin Lof and all the other work listed above. Howard was (justly!) proud of his paper, citing it as one of the two great achievements of his career [55].
 
 
-##5.   Intuitionistic logic
+## 5.   Intuitionistic logic
 
 
 In Gilbert and Sullivan’s *The Gondoliers*, Casilda is told that as an infant she was married to the heir of the King of Batavia, but that due to a mix-up no one knows which of two individuals, Marco or Giuseppe, is the heir. Alarmed, she wails “Then do you mean to say that I am married to one of two gondoliers, but it is impossible to say which?” To which the response is “Without any doubt of any kind whatever.”
@@ -123,7 +123,7 @@ In Gilbert and Sullivan’s *The Gondoliers*, Casilda is told that as an infant 
    Propositions as Types was first formulated for intuitionistic logic. It is a perfect fit, because in the intuitionist interpretation the formula `A ∨ B` is provable exactly when one exhibits either a proof of `A` or a proof of `B`, so the type corresponding to disjunction is a disjoint sum.
 
 
-##6.   Other logics, other computation
+## 6.   Other logics, other computation
 
 
 The principle of Propositions as Types would be remarkable even if it applied only to one variant of logic and one variant of computation. How much more remarkable, then, that it applies to a wide variety of logics and of computation.
@@ -147,7 +147,7 @@ The principle of Propositions as Types would be remarkable even if it applied on
    Propositions as Types remains a topic of active research.
 
 
-##7.   Natural deduction
+## 7.   Natural deduction
 
 
 We now turn to a more formal development, presenting a fragment of natural deduction and a fragment of typed lambda calculus in a style that makes clear the connection between the two.
@@ -155,7 +155,9 @@ We now turn to a more formal development, presenting a fragment of natural deduc
    We begin with the details of natural deduction as defined by Gentzen [20]. The proof rules are shown in Figure 1. To simplify our discussion, we consider just two of the connectives of natural deduction. We write `A` and `B` as placeholders standing for arbitrary formulas. Conjunction is written `A & B` and implication is written `A ⊃ B`.
 
 ![Figure 1.](images/figure1.png)
+
 ---
+
 Figure 1. Gerhard Gentzen (1935) — Natural Deduction
 
    We represent proofs by trees, where each node of the tree is an instance of a proof rule. Each proof rule consists of zero or more formulas written above a line, called the *premises*, and a single formula written below the line, called the *conclusion*. The interpretation of a rule is that when all the premises hold, then the conclusion follows.
@@ -175,7 +177,9 @@ Figure 1. Gerhard Gentzen (1935) — Natural Deduction
 is shown in Figure 2. In other words, if `B` and `A` hold then `A` and `B` hold. This may seem so obvious as to be hardly deserving of proof! However, the formulas `B ⊃ A` and `A ⊃ B` have meanings that differ, and we need some formal way to conclude that the formulas `B & A` and `A & B` have meanings that are the same. This is what our proof shows, and it is reassuring that it can be constructed from the rules we posit.
 
 ![Figure 2.](images/figure2.png)
+
 ---
+
 Figure 2.  A proof
 
    The proof reads as follows. From `B & A` we conclude `A`, by `&-E2`, and from `B & A` we also conclude `B`, by `&-E1`. From `A` and `B` we conclude `A & B`, by `&-I`. That is, from the assumption `B & A` (used twice) we conclude `A & B` . We discharge the assumption and conclude `(B & A) ⊃ (A & B)` by `⊃-I`, linking the discharged assumptions to the discharging rule by writing `z` as a superscript on each.
@@ -183,12 +187,16 @@ Figure 2.  A proof
    Some proofs are unnecessarily roundabout. Rules for simplifying proofs appear in Figure 3, and an example of such a proof appears in Figure 4. Let’s focus on the example first.
 
 ![Figure 3.](images/figure3.png)
+
 ---
+
 Figure 3.  Simplifying proofs
 
 
 ![Figure 4.](images/figure4.png)
+
 ---
+
 Figure 4.  Simplifying a proof
 
    The top of Figure 4 shows a larger proof built from the proof in Figure 2. The larger proof assumes as premises two formulas, `B` and `A`, and concludes with the formula `A & B`. However, rather than concluding it directly we derive the result in a roundabout way, in order to illustrate an instance of `⊃-E`, *modus ponens*. The proof reads as follows. On the left is the proof given previously, concluding in `(B & A) ⊃ (A & B)`. On the right, from `B` and `A` we conclude `B & A` by `&-I`. Combining these yields `A & B` by `⊃-E`.
@@ -205,7 +213,7 @@ Figure 4.  Simplifying a proof
 
    It is not hard to see that proofs in normal form satisfy the Subformula Property: every formula of such a proof must be a subformula of one of its undischarged assumptions or of its conclusion. The proof in Figure 2 and the final proof of Figure 4 both satisfy this property, while the first proof of Figure 4 does not, since `(B & A) D (A & B)` is not a subformula of `A & B`.
 
-##8.   Lambda calculus
+## 8.   Lambda calculus
 
 We now turn our attention to the simply-typed lambda calculus of Church [10]. The type rules are shown in Figure 5. To simplify our discussion, we take both products and functions as primitive types; Church’s original calculus contained only function types, with products as a derived construction. We now write `A` and `B` as placeholders for arbitrary types, and `L`, `M`, `N` as placeholder for arbitrary terms. Product types are written `A x B` and function types are written `A → B`. Now instead of formulas, our premises and conclusions are judgments of the form
 
@@ -214,7 +222,9 @@ We now turn our attention to the simply-typed lambda calculus of Church [10]. Th
 indicating that term M has type A.
 
 ![Figure 5.](images/figure5.png)
+
 ---
+
 Figure 5. Alonzo Church (1935) — Lambda Calculus
 
    Like proofs, we represent type derivations by trees, where each node of the tree is an instance of a type rule. Each type rule consists of zero or more judgments written above a line, called the premises, and a single judgment written below the line, called the conclusion. The interpretation of a rule is that when all the premises hold, then the conclusion follows.
@@ -236,7 +246,9 @@ Figure 5. Alonzo Church (1935) — Lambda Calculus
 is shown in Figure 6. Whereas the difference between `B & A` and `A & B` appears a mere formality, the difference between `B × A` and `A × B` is easier to appreciate: converting the latter to the former requires swapping the elements of the pair, which is precisely the task performed by the program corresponding to our former proof.
 
 ![Figure 6.](images/figure6.png)
+
 ---
+
 Figure 6. A program
 
   The program reads as follows. From variable `z` of type `B × A` we form term `n₂ z` of type `A` by `x -E₂` and also term `π2 z` of type `B` by `×-E2`. From these two we form the pair `π1 z` of type `A × B` by `×-I`. Finally, we bind the free variable `z` to form the lambda term `λz.⟨π2 z, π1 z⟩` of type `(B × A) → (A × B)` by `→-I`, connecting the bound typings to the binding rule by writing `z` as a superscript on each. The function accepts a pair and swaps its elements, exactly as described by its type.
@@ -244,13 +256,17 @@ Figure 6. A program
   A program may be evaluated by rewriting. Rules for evaluating programs appear in Figure 7, and an example appears in Figure 8. Let’s focus on the example first.
 
 ![Figure 7.](images/figure7.png)
+
 ---
+
 Figure 7.  Evaluating programs
 
   The top of Figure 8 shows a larger program built from the program in Figure 6. The larger program has two free variables, `y` of type `B` and `x` of type `A`, and constructs a value of type `A × B` . However, rather than constructing it directly we reach the result in a roundabout way, in order to illustrate an instance of `→-E`, function application. The program reads as follows. On the left is the program given previously, forming a function of type `(B × A) → (A × B)`. On the right, from `B` and `A` we form the pair `⟨y, x⟩` of type `B × A` by `×-I`. Applying the function to the pair forms a term of type `A × B` by `→-E`.
 
 ![Figure 8.](images/figure8.png)
+
 ---
+
 Figure 8.  Evaluating a program
 
   We may evaluate this program by applying the rewrite rules of Figure 7. These rules specify how to rewrite a term when an introduction rule is immediately followed by the corresponding elimination rule. Each rule shows two derivations connected by an arrow, indicating that the redex (the term on the left) may be rewritten, or evaluated, to yield the reduct (the term on the right). Rewrites always take a valid type derivation to another valid type derivation, ensuring that rewrites preserve types, a property known as subject reduction or type soundness.
@@ -270,7 +286,9 @@ Proposition as Types informs our view of the universality of certain programming
    The Pioneer spaceship contains a plaque designed to communicate with aliens, if any should ever intercept it (see Figure 9). They may find some parts of it easier to interpret than others. A radial diagram shows the distance of fourteen pulsars and the centre of the galaxy from Sol. Aliens are likely to determine that the length of each line is proportional to the distances to each body. Another diagram shows humans in front of a silhouette of Pioneer. If Star Trek gives an accurate conception of alien species, they may respond “They look just like us, except they lack pubic hair.” However, if the aliens’s perceptual system differs greatly from our own, they may be unable to decipher these squiggles.
 
 ![Figure 9.](images/figure9.png)
+
 ---
+
 Figure 9. Plaque on Pioneer Spaceship
 
    What would happen if we tried to communicate with aliens by transmitting a computer program? In the movie Independence Day, the heroes destroy the invading alien mother ship by infecting it with a computer virus. Close inspection of the transmitted program shows it contains curly braces—it is written in a dialect of `C`! It is unlikely that alien species would program in `C`, and unclear that aliens could decipher a program written in `C `if presented with one.
@@ -289,10 +307,13 @@ While writing this paper, I realised Iwas unclear on parts of the history. Below
 
 Here is my original request.
 
-   ---
-   Subject: The Formulae-as-Types Notion of Construction
+---
 
-   Dear Prof Howard,
+Subject: The Formulae-as-Types Notion of Construction
+
+---
+
+Dear Prof Howard,
 
    My research has been greatly influenced by your own, particularly the paper cited in my subject. I am now writing a paper on the field of work that grew out of that paper, which was solicited for publications by the Communications of the ACM (the flagship of the professional organisation for computer scientists). A draft of the paper is attached.
 
@@ -305,7 +326,10 @@ Here is my original request.
  And here is his response:
  
  ---
+ 
  Dear Prof. Wadler,
+ 
+ ---
  
  As mentioned in the interview with Shell-Gellasch, my work on propositions as types (p-a-t) originated from my correspondence with Kreisel, who was very interested in getting a mathematical notion (i.e., in ordinary mathematics) for Brouwer’s idea of a construction (as explained by Heyting). I was not familiar with the work of Brouwer or Heyting, let alone Kolmogorov, but, from what Kreisel had to say, the idea was clear enough: a construction of a ^ в was to be a construction F which, acting on a construction A of a, gives a construction B of в. So we have constructions acting on constructions, rather like functionals acting on functionals. So, as an approximation,
 
@@ -371,9 +395,13 @@ Here is my original request.
    Your pdf, Propositions as Types, is very readable.
    
    Bill
+   
    ---   
+   
    A later message provided additional detail on the relation to Curry and Feys [14].
+   
    ---
+   
    Curry observed the striking fact that
    
    (1)     if the basic combinators are typed, then the types they receive have the same structure as various axioms of pure implicative logic, P.
@@ -399,9 +427,13 @@ Here is my original request.
    (5)    a typed lambda term can be normalized.
    
    If I am right about this, then the explanation of the mystery would be that (5) was not widely known at the time that Curry-Feys was written (publication date: 1958).
-   ---
+
+---
+
    Later, Howard elaborated on his last point above.
-   ---
+
+---
+
    Concerning the question of whether (5) was widely known at the time that Curry-Feys was written, the answer is, to my surprise: apparently not. I just remembered that Robin Gandy, whom I knew quite well, had published, in the Curry Festschrift, an article about Turing’s proof of (5). (Actually, he explained the proof to me in 1978.) Gandy says on p. 454:
    
    “The earliest published proof [of (5)] known to me is in Curry & Fey’s book Combinatory Logic . . . ”
@@ -412,7 +444,7 @@ Here is my original request.
    
    Turing’s proof is the one that just about anyone would think of (execute redexes in a strategic order: “rightmost”-“innermost”-lambda operators of highest type first). In contrast, Curry-Fey’s proof, in the proof of Theorem 5, follows the style of Tait’s computability method (“Intensional interpretations . . . ”) or a variant thereof. At least, that is my impression. Someone should check this.
 
-##References
+## References
 
 1. S. Abramsky. Computational interpretations of linear logic. Theoretical Computer Science, 111(1&2):3-57, 1993.
 2. J. Baez and M. Stay. Physics, topology, logic and computation: a rosetta stone. In B. Coecke, editor, New Structures for Physics, Lecture Notes in Physics, pages 91-166. Springer-Verlag, 2009.
